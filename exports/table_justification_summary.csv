@@ -1,0 +1,10 @@
+prompt_condition,injection_type,n,mean_faithfulness_poisoned
+standard,adversarial_fact,6,0.7583
+standard,poisonedrag_style,4,0.8
+standard,random_noise,6,0.6
+standard_postfilter,adversarial_fact,5,0.666
+standard_postfilter,poisonedrag_style,5,0.83
+standard_postfilter,random_noise,6,0.2333
+poison_aware,adversarial_fact,6,0.5583
+poison_aware,poisonedrag_style,6,0.4917
+poison_aware,random_noise,6,0.5167

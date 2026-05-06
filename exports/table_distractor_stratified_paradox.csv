@@ -1,0 +1,10 @@
+judge,distractor_removal_quartile,n_triplets,true_mean_baseline,true_mean_postfilter,delta
+GPT,Q1(low),291,0.4096,0.3469,-0.0627
+GPT,Q2,210,0.3675,0.5098,0.1422
+GPT,Q3(high),75,0.3827,0.6333,0.2507
+GEMINI,Q1(low),291,0.4667,0.3792,-0.0875
+GEMINI,Q2,210,0.399,0.5971,0.1981
+GEMINI,Q3(high),75,0.468,0.8027,0.3347
+DEEPSEEK,Q1(low),291,0.3395,0.3347,-0.0048
+DEEPSEEK,Q2,210,0.29,0.5467,0.2567
+DEEPSEEK,Q3(high),75,0.28,0.7413,0.4613

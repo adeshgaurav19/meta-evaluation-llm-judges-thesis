@@ -1,0 +1,47 @@
+[project]
+name = "thesis-meta-eval"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0",
+    "pyyaml",
+    "httpx",
+    "python-dotenv",
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "scipy",
+    "torch>=2.0",
+    "transformers>=4.35",
+    "sentence-transformers",
+    "xgboost",
+    "matplotlib",
+    "seaborn",
+    "tqdm",
+    "tiktoken",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ipykernel", "ruff"]
+judges = ["openai>=1.0", "google-genai"]
+poison = ["mistralai>=1.0"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I"]
+ignore = [
+    "E402",  # scripts use sys.path.insert before local imports — unavoidable
+]
+
+[tool.black]
+line-length = 100

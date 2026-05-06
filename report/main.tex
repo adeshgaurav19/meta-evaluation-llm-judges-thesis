@@ -1,0 +1,71 @@
+% =============================================================
+%  Master Thesis - Meta-Evaluation of LLM Judges
+%  Adesh Gaurav | EMLYON Business School
+%  MSc Data Science & AI Strategy | 2026
+% =============================================================
+
+\documentclass[11pt,a4paper,oneside]{report}
+
+% ---------- Packages ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{calc}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{amsmath,amssymb}
+\usepackage{csquotes}
+\usepackage[round,authoryear]{natbib}
+
+% Pandoc/word-processor exports leave a few Unicode mathematical symbols in prose.
+% These declarations keep the source compatible with pdfLaTeX.
+\DeclareUnicodeCharacter{2212}{\ensuremath{-}}
+\DeclareUnicodeCharacter{2264}{\ensuremath{\leq}}
+\DeclareUnicodeCharacter{2265}{\ensuremath{\geq}}
+\DeclareUnicodeCharacter{0394}{\ensuremath{\Delta}}
+\DeclareUnicodeCharacter{03C7}{\ensuremath{\chi}}
+\DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=blue!50!black,
+  urlcolor=blue!60!black,
+  pdfauthor={Adesh Gaurav},
+  pdftitle={Meta-Evaluation of LLM Judges: Quantifying Robustness to Poisoned Context and Lightweight Pre-filtering}
+}
+
+% ---------- Spacing ----------
+\onehalfspacing
+
+% ---------- Front matter, body, back matter included from per-chapter files ----------
+\begin{document}
+
+% ----- Front matter (title page, abstract, résumé, ToC, lists) -----
+\input{00_frontmatter.tex}
+
+% ----- Body chapters -----
+\input{01_introduction.tex}
+\input{02_literature_review.tex}
+\input{03_methodology.tex}
+\input{04_results.tex}
+\input{05_discussion.tex}
+\input{06_conclusion.tex}
+
+% ----- Back matter -----
+\input{07_references.tex}
+\input{08_appendices.tex}
+
+\end{document}

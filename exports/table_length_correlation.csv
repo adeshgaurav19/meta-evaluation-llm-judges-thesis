@@ -1,0 +1,10 @@
+judge,condition,mean_passages_after_filter,pearson_r_length_vs_faithfulness,p_value,n_triplets
+GPT,baseline,11.62,0.0994,0.000562,1200
+GEMINI,baseline,11.62,0.2895,0.0,1199
+DEEPSEEK,baseline,11.62,-0.0815,0.004716,1200
+GPT,postfilter,7.11,0.357,0.0,1200
+GEMINI,postfilter,7.11,0.4683,0.0,1200
+DEEPSEEK,postfilter,7.11,0.312,0.0,1200
+GPT,postfilter_llm,7.11,0.3362,0.0,1200
+GEMINI,postfilter_llm,7.11,0.3946,0.0,1198
+DEEPSEEK,postfilter_llm,7.11,0.2801,0.0,1200

@@ -1,0 +1,113 @@
+% Front Matter (Title page, Abstract, ToC, Lists)
+
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+        
+        % Logo (Changed from .avif to .png)
+        \includegraphics[width=0.4\textwidth]{emlyon_logo.png}
+        
+        \vspace{1.5cm}
+        
+        % University Name
+        {\LARGE \textbf{EMLYON BUSINESS SCHOOL}}
+        
+        \vspace{0.5cm}
+        
+        % Degree Program
+        {\Large \emph{Master of Science in Data Science \& AI Strategy}}
+        
+        \vspace{2cm}
+        
+        % Document Type
+        {\Large \textbf{MASTER THESIS}}
+        
+        \vspace{1.5cm}
+        
+        % Thesis Title
+        {\huge \textbf{Meta-Evaluation of LLM Judges:\\ Quantifying Robustness to Poisoned Context and\\ Lightweight Pre-filtering}}
+        
+        \vspace{2.5cm}
+        
+        % Author
+        Submitted by\\[0.3cm]
+        {\Large \textbf{Adesh Gaurav}}
+        
+        \vspace{1.5cm}
+        
+        % Supervisor
+        Supervisor\\[0.3cm]
+        {\large \emph{Dr. Waad Al Masri}}
+        
+        \vfill
+        
+        % Year
+        {\large \textbf{2026}}
+        
+        \vspace*{1cm}
+    \end{center}
+\end{titlepage}
+
+\begin{abstract}
+
+The LLM-as-a-Judge paradigm has now become a de facto methodology for evaluating RAG at scale. Two open research questions persist: (1) are the judges still faithful under corpus poisoning, and (2) can pre-filters recover this faithfulness? This thesis answers both questions head-on. We perform a systematic meta-evaluation of three current LLM judges, GPT-5.4-nano, Gemma-4-26B-A4B-IT, and DeepSeek-V3.2, under controlled corpus poisoning, and investigate two pre-filter strategies in an end-to-end evaluation through a residual-aware decomposition of post-filter judge behavior.
+
+We create a Poisoned Evaluation Dataset of 2,400 question-context-answer triplets taken from HotpotQA (1,200 poisoned, 1,200 matching clean controls) covering three insertion attack types of varying adversarial sophistication: random noise, adversarial fact rewriting, and a PoisonedRAG-style targeted attack that uses Gemini-2.5-flash-lite to inject a wrong-answer-supporting passage. All at four distinct levels of poisoning intensity (0.2--0.8), we test three judges on the three RAGAS dimensions in baseline and post-filter scenarios, and we test two pre-filters in an end-to-end configuration. The two pre-filters examined are: a statistical passage-level filtering pipeline (five indicators-embedding cosine anomaly, GPT-2 perplexity, a fine-tuned DeBERTa-v3-small classifier, cross-encoder relevance, and answer token recall-are aggregated through XGBoost), and an LLM-level triplet-filtering model (using Mistral-small-latest).
+
+We observe baseline faithfulness FPRs ranging from 0.412 (DeepSeek) to 0.699 (Gemma); qualitatively different calibration regimes were identified for the three judges. Despite robust classifier performance, both pre-filter strategies yielded slightly improved downstream judges when given clean input. Only DeepSeek, given an adversarial input intended to improve judge faithfulness by modifying passages supporting the correct answer (True subset of poisoned data), and at a severity level that would naturally affect only that subset, achieved a statistically significant improvement (corrected p = 0.099) with respect to the statistical filter and Judges. The statistical filter does not, however, improve Judges on the True subset when judged with Mistral-Small-latest; however, the LLM filter does boost Judge performance on the True subset for all judges. A comparison of all three models for a residual-aware decomposition demonstrates that the end-to-end strategy with the statistical filter leads to significant accuracy increases in the Survived subset for PoisonedRAG-style triplets (by +0.377 on faithfulness, corrected p = 0.012) when the attack was strongest. The two best results are not caused by the intended logical effects of attack targeting, but rather by the unintended logical consequence of an overly short resulting context from filter's reduction of original context passages from an average of 11.6 to 7.1 (correlating with higher faithfulness: post-filter Pearson r 0.31--0.47 vs. ~0.1 at baseline), where the original context's distracting content was removed. It is evident that Judges cannot inherently overcome corpus poisoning through inherent mechanisms and only by cleaning up residual contexts and ensuring more concise information are they robust.
+
+\textbf{Keywords:} LLM-as-a-Judge, Retrieval-Augmented Generation, Adversarial Robustness, Context Poisoning, Meta-Evaluation, Pre-filtering, True/Survived Decomposition, Automated Evaluation, RAG Security.
+
+\end{abstract}
+
+\chapter*{Acknowledgements}
+
+I would like to thank my supervisor, Dr. Waad Al Masri, for guidance and feedback throughout this research.
+
+I am especially grateful to Chloe Guiga, Aurelien Thomann, Yassine Filali, and the AIRTech Team for giving me the opportunity to work on this topic and explore this field during my internship. Their encouragement pushed me to read through the research papers, understand the practical problems around RAG evaluation, and develop the evaluation pipeline using LLM-as-a-Judge methods. That internship experience motivated me to take this area seriously and shaped the direction of this thesis.
+
+I would also like to thank my friends from emlyon for their support, conversations, and encouragement throughout the year. Finally, I am grateful to my family and friends for their patience and support during the thesis process.
+
+
+\tableofcontents
+
+\listoffigures
+
+\listoftables
+
+\chapter*{List of Abbreviations}
+
+\begin{description}[leftmargin=3.2cm, style=nextline]
+    \item[AI] Artificial Intelligence
+    \item[API] Application Programming Interface
+    \item[ASR] Attack Success Rate
+    \item[AUC] Area Under the Curve
+    \item[BERT] Bidirectional Encoder Representations from Transformers
+    \item[CAP] Comparative Augmented Prompting
+    \item[CI] Confidence Interval
+    \item[CPU] Central Processing Unit
+    \item[CSV] Comma-Separated Values
+    \item[DeBERTa] Decoding-enhanced BERT with Disentangled Attention
+    \item[F1] Harmonic mean of precision and recall
+    \item[FNR] False Negative Rate
+    \item[FPR] False Positive Rate
+    \item[GPU] Graphics Processing Unit
+    \item[GPT] Generative Pre-trained Transformer
+    \item[HTTP] Hypertext Transfer Protocol
+    \item[JSON] JavaScript Object Notation
+    \item[JSONL] JSON Lines
+    \item[KDE] Kernel Density Estimation
+    \item[LLM] Large Language Model
+    \item[NLP] Natural Language Processing
+    \item[PDF] Portable Document Format
+    \item[PPL] Perplexity
+    \item[QA] Question Answering
+    \item[RAG] Retrieval-Augmented Generation
+    \item[RAGAS] Retrieval Augmented Generation Assessment
+    \item[RLHF] Reinforcement Learning from Human Feedback
+    \item[ROC] Receiver Operating Characteristic
+    \item[RQ] Research Question
+    \item[SDK] Software Development Kit
+    \item[TPR] True Positive Rate
+    \item[XGBoost] Extreme Gradient Boosting
+\end{description}

@@ -1,0 +1,5 @@
+injection_type,n_triplets_total,n_triplets_poisoned,n_triplets_clean,tp_triplet,fp_triplet,tn_triplet,fn_triplet,mistral_precision,mistral_recall,mistral_f1,mistral_clean_fpr
+adversarial_fact,800,400,400,244,71,329,156,0.7746,0.61,0.6825,0.1775
+poisonedrag_style,800,400,400,306,66,334,94,0.8226,0.765,0.7927,0.165
+random_noise,800,400,400,56,72,328,344,0.4375,0.14,0.2121,0.18
+overall,2400,1200,1200,606,209,991,594,0.7436,0.505,0.6015,0.1742

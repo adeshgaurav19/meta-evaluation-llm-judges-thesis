@@ -1,0 +1,81 @@
+# Local operating-system files
+.DS_Store
+*/.DS_Store
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+thesis_meta_eval.egg-info/
+
+# LaTeX build products
+report/*.aux
+report/*.bbl
+report/*.blg
+report/*.bcf
+report/*.fdb_latexmk
+report/*.fls
+report/*.lof
+report/*.log
+report/*.lot
+report/*.out
+report/*.run.xml
+report/*.synctex*
+report/*.toc
+report/*.pdf
+report/verify_methodology_figures.pdf
+
+# Large/generated experiment artifacts
+results/**
+!results/
+!results/tables/
+!results/tables/**
+!results/figures/
+!results/figures/**
+!results/benchmarks/
+!results/benchmarks/*.md
+!results/justifications/
+!results/justifications/*.md
+!results/v2/
+!results/v2/tables/
+!results/v2/tables/**
+!results/v2/figures/
+!results/v2/figures/**
+!results/v2/benchmarks/
+!results/v2/benchmarks/*.md
+!results/v2/justifications/
+!results/v2/justifications/*.md
+
+# Generated or source datasets that should be released separately or via LFS
+data/**
+!data/
+!data/raw/
+!data/raw/README.md
+!data/raw/hotpotqa_base.json
+!data/raw/hotpotqa_metadata.json
+
+# One-off/legacy local exports. Keep final top-level exports and exports/figures.
+exports/_archived_tables/
+exports/legacy_analysis/
+exports/title_lookup.json
+kaggle_phase34/
+
+# Local AI/editor working notes that are not part of the release repo
+PROJECT_CONTEXT.md
+v2_runbook.txt
+methodology.docx
+methodology.txt

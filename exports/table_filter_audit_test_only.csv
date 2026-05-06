@@ -1,0 +1,7 @@
+split,filter_type,injection_type,n_triplets_originally_poisoned,mean_passages_per_triplet_original,mean_passages_removed_per_triplet,mean_poisoned_passages_caught,mean_poisoned_passages_missed,mean_supporting_passages_lost_collateral,mean_distractor_passages_removed_correctly,passage_level_recall,passage_level_precision,n_flagged_triplets,triplet_level_recall,triplet_level_clean_fpr,n_triplets_with_support_killed_pre_filter,n_triplets_with_support_remained_pre_filter,n_triplets_with_support_remained_post_filter
+test,statistical,adversarial_fact,80,9.875,4.0625,2.425,2.4375,0.425,1.2125,0.4987146529562982,0.5969230769230769,,,,52,28,53
+test,statistical,poisonedrag_style,80,14.9,4.8375,1.275,3.625,0.375,3.1875,0.2602040816326531,0.26356589147286824,,,,0,80,46
+test,statistical,random_noise,80,9.9375,4.575,2.775,2.125,0.2125,1.5875,0.5663265306122449,0.6065573770491803,,,,56,24,53
+test,llm,adversarial_fact,80,9.875,,,,,,,,41.0,0.5125,0.2013888888888889,52,28,28
+test,llm,poisonedrag_style,80,14.9,,,,,,,,63.0,0.7875,0.145985401459854,0,80,80
+test,llm,random_noise,80,9.9375,,,,,,,,10.0,0.125,0.17424242424242425,56,24,24

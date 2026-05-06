@@ -1,0 +1,13 @@
+judge,injection_type,fpr_baseline,fpr_statistical,fpr_llm,delta_statistical,delta_llm
+deepseek-v3,random_noise,0.465,0.525,0.46,0.06,-0.005
+deepseek-v3,adversarial_fact,0.3975,0.5325,0.49,0.135,0.0925
+deepseek-v3,poisonedrag_style,0.375,0.7375,0.71,0.3625,0.335
+deepseek-v3,overall,0.4125,0.5983,0.5533,0.1858,0.1408
+gemma-4-26b,random_noise,0.49,0.52,0.4737,0.03,-0.0163
+gemma-4-26b,adversarial_fact,0.59,0.5575,0.5725,-0.0325,-0.0175
+gemma-4-26b,poisonedrag_style,0.8747,0.9175,0.8897,0.0428,0.015
+gemma-4-26b,overall,0.6514,0.665,0.6452,0.0136,-0.0061
+gpt-5.4-nano,random_noise,0.485,0.505,,0.02,
+gpt-5.4-nano,adversarial_fact,0.55,0.5675,,0.0175,
+gpt-5.4-nano,poisonedrag_style,0.6075,0.7525,,0.145,
+gpt-5.4-nano,overall,0.5475,0.6083,,0.0608,

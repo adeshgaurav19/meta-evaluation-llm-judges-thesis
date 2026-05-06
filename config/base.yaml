@@ -1,0 +1,92 @@
+experiment:
+  name: "meta-eval-v1"
+  seed: 42
+  results_dir: "results/"
+
+dataset:
+  raw_path: "data/raw/"
+  output_path: "data/poisoned/"
+  n_base_triplets: 100             # Target: 100 RAG log entries
+  context_separator: "\n\n"        # How passages are separated in context field
+  context_max_tokens: 2000         # HARD CAP: truncate each context to this many tokens
+  passage_max_tokens: 500          # Truncate individual passages before injection
+  answer_max_tokens: 300           # Truncate answers
+  splits:
+    train: 0.6
+    val: 0.2
+    test: 0.2
+  noise_levels: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+  injection_types:
+    - random_noise
+    - adversarial_fact
+    - poisonedrag_style
+
+poison_generation:
+  provider: "google"
+  model_id: "gemini-2.5-flash-lite"
+  max_concurrent: 10
+  use_batch_api: true
+
+judges:
+  scoring:
+    models:
+      - name: "gpt-5.4-nano"
+        provider: "openai"
+        model_id: "gpt-5.4-nano"
+      - name: "gemma-4-26b"
+        provider: "google"
+        model_id: "gemma-4-26b-a4b-it"
+      - name: "deepseek-v3"
+        provider: "deepseek"
+        model_id: "deepseek-chat"
+    max_output_tokens: 50          # JSON-only output, ~30 tokens needed
+    scoring_threshold: 0.5
+    max_concurrent: 10
+    timeout_base_s: 30
+    timeout_per_record_s: 2
+    use_batch_api: true
+  justification:
+    model: "gpt-5.4-nano"
+    provider: "openai"
+    n_samples: 30                  # 10 clean + 10 worst FP + 10 random poisoned
+    max_output_tokens: 500
+    sample_strategy: "stratified"  # Pick from different injection types
+
+prefilter:
+  embedding:
+    model: "sentence-transformers/all-mpnet-base-v2"
+    outlier_std_threshold: 2.0
+    flag_high_sim: true            # Flag over-optimised passages too
+    high_sim_threshold: 0.95
+  entropy:
+    model: "gpt2"
+    chunk_size: 128
+    high_entropy_threshold: 5.0
+    low_entropy_threshold: 1.5
+    variance_threshold: 3.0
+  classifier:
+    model: "microsoft/deberta-v3-small"
+    max_length: 128
+    epochs: 5
+    lr: 2.0e-5
+    batch_size: 64
+    early_stopping_patience: 2
+    checkpoint_dir: "results/models/deberta_classifier/"
+  answer_span:
+    recall_threshold: 0.3           # passages below this answer token recall are flagged
+  aggregation:
+    methods: ["weighted_vote", "xgboost", "majority_vote"]
+    primary: "xgboost"
+    threshold: 0.5
+    weights: [0.15, 0.15, 0.35, 0.15, 0.20]  # emb, entropy, clf, crossencoder(0 locally), answer_span
+    xgboost:
+      max_depth: 3
+      n_estimators: 100
+      checkpoint_path: "results/models/xgboost_aggregator.pkl"
+
+reporting:
+  figure_format: "png"
+  figure_dpi: 300
+  figure_style: "seaborn-v0_8-whitegrid"
+  table_format: "csv"
+  results_dir: "results/"

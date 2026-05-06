@@ -1,0 +1,5 @@
+variant,n_triplets,mean_std_clean,mean_std_poisoned,pearson_r,p_value,notes
+A,2397,0.2049,0.2556,0.1127,0.0,"all triplets, ddof=1, r(std, is_poisoned)"
+B,2397,0.2049,0.2556,0.1127,0.0,"all triplets, ddof=0, r(std, is_poisoned)"
+C,1199,,0.2556,0.2865,0.0,"poisoned only, ddof=1, r(std, injection_type_ordinal)"
+existing-table,2400,0.2049,0.2556,0.5137,0.0,"GPT vs DeepSeek faithfulness (cross-judge correlation, NOT std vs is_poisoned)"

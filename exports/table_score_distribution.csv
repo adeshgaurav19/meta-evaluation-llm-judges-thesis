@@ -1,0 +1,4 @@
+judge,n_total,pct_extreme_low,pct_middle,pct_extreme_high
+GPT,2400,0.215,0.3033,0.4817
+GEMINI,2397,0.1218,0.1068,0.7714
+DEEPSEEK,2400,0.4025,0.0058,0.5917
