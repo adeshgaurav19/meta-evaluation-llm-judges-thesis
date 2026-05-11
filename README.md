@@ -1,47 +1,71 @@
 # Meta-Evaluation of LLM Judges Under Poisoned RAG Context
 
-This repository contains the code, experiment configuration, analysis outputs, and LaTeX thesis source for Adesh Gaurav's master thesis:
+This repository contains the code, configuration, saved outputs, analysis exports, and report source for evaluating LLM-as-a-Judge robustness under poisoned RAG context.
 
-**Meta-Evaluation of LLM Judges: Quantifying Robustness to Poisoned Context and Lightweight Pre-filtering**
+The project tests two questions:
 
-The project studies whether contemporary LLM-as-a-Judge pipelines remain reliable when retrieved context is poisoned, and whether lightweight pre-filtering improves or worsens downstream judge reliability.
+1. How do LLM judges behave when the retrieved context is poisoned?
+2. Do lightweight pre-filters improve or worsen downstream judge reliability?
 
-## Current Findings
+The final experiments use three judges, three poisoning types, two pre-filter strategies, and an end-to-end analysis of how filtering changes the context seen by the judge.
 
-The final thesis results support four main claims:
+## Repository Map
 
-- LLM judges fail at substantial rates on poisoned RAG context. Baseline faithfulness FPR ranges from 0.412 to 0.699 across the three judges studied.
-- Judge behaviour is structured by calibration regime. GPT behaves like a continuous scorer, Gemma is highly lenient, and DeepSeek is near-binary.
-- The statistical pre-filter is strong as a passage-level classifier on the held-out test split (F1 = 0.929, precision = 0.955, recall = 0.904), but this does not translate cleanly into better end-to-end judge reliability.
-- The main end-to-end failure mechanism is context clarification through distractor removal: filtering shortens and cleans the residual context, and judges can over-trust that cleaner-looking residual even when poison remains.
+| Path | What it contains |
+|---|---|
+| `config/` | Experiment configuration. `config/v2.yaml` is the final v2 config. |
+| `src/` | Reusable package code: dataset construction/poisoning, judges, pre-filters, metrics, analysis helpers, and utilities. |
+| `scripts/` | Main runnable pipeline scripts and final analysis scripts. |
+| `pipeline.py` | Convenience pipeline entry point. |
+| `notebooks/phase3_4_kaggle.ipynb` | Kaggle notebook used for GPU-heavy Phase 3 and Phase 4 work. The classifier/pre-filter GPU code can be inspected there. |
+| `kaggle_phase34/` | Kaggle working copy / supporting notebook material for Phase 3 and Phase 4. |
+| `results/v2/` | Saved v2 experiment outputs used by the final analysis: raw judge scores, pre-filter scores, filtered triplets, justification samples, and audit files. |
+| `exports/` | Final thesis-ready CSV tables, figures, and summaries generated from `scripts/analyze.py` and `scripts/plot.py`. |
+| `report/` | LaTeX report source, bibliography, report images, and report-specific README. |
+| `docs/` | Supporting documentation. `docs/code-flow/` explains the end-to-end code flow. |
+| `data/` | Local dataset workspace. Large source/intermediate data is not intended to be the main source of truth in Git. |
 
-## Repository Layout
+## Experiment Phases
 
-| Path | Purpose | Push policy |
+| Phase | Purpose | Main code |
 |---|---|---|
-| `src/` | Dataset construction, judge runners, pre-filter modules, metrics, analysis helpers | Push |
-| `scripts/` | Reproducible pipeline entry points | Push |
-| `config/` | Experiment configuration files | Push |
-| `report/` | LaTeX thesis source, bibliography, report figures, final manuscript assets | Push source; treat generated PDFs as release artifacts |
-| `report/Images/` | Methodology figures used in Chapter 3 | Push |
-| `exports/` | Final compact tables, figures, and summaries used by the thesis | Push selected final exports |
-| `data/` | HotpotQA source, poisoned datasets, splits, batch inputs, checkpoints | Do not push by default; use Git LFS or an external artifact release |
-| `results/` | Raw judge outputs, pre-filter outputs, model checkpoints, generated tables/figures | Push compact tables/figures only; keep raw outputs/checkpoints out of normal git |
-| `docs/` | Repository documentation and push strategy | Push |
+| Phase 1 | Build the poisoned evaluation dataset from HotpotQA. | `scripts/00_download_hotpotqa.py`, `scripts/01_prepare_dataset.py`, `src/dataset/` |
+| Phase 2 | Run baseline LLM judges on clean and poisoned triplets. | `scripts/02_run_judges.py`, `src/judges/` |
+| Phase 3 | Train and run statistical and LLM pre-filters. | `scripts/03_train_prefilter.py`, `scripts/04_run_prefilter.py`, `scripts/04b_run_llm_prefilter.py`, `src/prefilter/`, `notebooks/phase3_4_kaggle.ipynb` |
+| Phase 4 | Score post-filter contexts and run end-to-end analysis. | `scripts/05_evaluate_impact.py`, `scripts/06_run_justifications.py`, `scripts/06b_run_poison_aware_judge.py`, `scripts/analyze.py`, `scripts/plot.py` |
 
-See [docs/GIT_PUSH_STRATEGY.md](docs/GIT_PUSH_STRATEGY.md) for the exact first-push manifest.
+Phase 3 and parts of Phase 4 used Kaggle because the classifier and cross-encoder steps benefit from GPU. The notebook is included so the GPU-side workflow is visible in the repository. A short phase-by-phase code walkthrough is in `docs/code-flow/`.
 
-## Setup
+## Code Map
 
-Create and activate a Python environment, then install the project in editable mode:
+Main scripts:
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[dev,judges,poison]"
-```
+| Script | Role |
+|---|---|
+| `scripts/00_download_hotpotqa.py` | Downloads/prepares the HotpotQA base data. |
+| `scripts/01_prepare_dataset.py` | Builds the poisoned evaluation dataset. |
+| `scripts/02_run_judges.py` | Runs baseline judge scoring. |
+| `scripts/03_train_prefilter.py` | Trains the statistical pre-filter components. |
+| `scripts/04_run_prefilter.py` | Applies the statistical pre-filter to triplets. |
+| `scripts/04b_run_llm_prefilter.py` | Runs the Mistral triplet-level pre-filter. |
+| `scripts/05_evaluate_impact.py` | Scores post-filter contexts and compares impact. |
+| `scripts/06_run_justifications.py` | Runs justification prompt experiments. |
+| `scripts/06b_run_poison_aware_judge.py` | Runs poison-aware judge prompt experiments. |
+| `scripts/analyze.py` | Regenerates final analysis tables from saved v2 outputs. |
+| `scripts/plot.py` | Regenerates final figures from exported tables. |
+| `scripts/ablation_minimal.py` | Produces the minimal ablation report used in the appendix. |
+| `scripts/_archived/` | Older scripts kept for traceability; not part of the final v2 pipeline. |
 
-Copy `.env.example` to `.env` and fill in local API keys when running judge or generation jobs. The real `.env` file is intentionally ignored by git.
+Source modules:
+
+| Module | Role |
+|---|---|
+| `src/dataset/` | Dataset loading, poisoning, schema handling, and split creation. |
+| `src/judges/` | Judge clients, prompts, batching, and scoring runners. |
+| `src/prefilter/` | Statistical signals, aggregation, classifier training, and LLM pre-filter logic. |
+| `src/metrics/` | Judge, detection, and system metric helpers. |
+| `src/analysis/` | Supporting analysis utilities. |
+| `src/utils/` | Shared configuration, logging, async HTTP, and context truncation helpers. |
 
 ## Main Pipeline
 
@@ -55,31 +79,85 @@ python scripts/03_train_prefilter.py --config config/v2.yaml
 python scripts/04_run_prefilter.py --config config/v2.yaml
 python scripts/04b_run_llm_prefilter.py --config config/v2.yaml
 python scripts/05_evaluate_impact.py --config config/v2.yaml
+python scripts/06_run_justifications.py --config config/v2.yaml
+python scripts/06b_run_poison_aware_judge.py --config config/v2.yaml
 python scripts/analyze.py
 python scripts/plot.py
 ```
 
-Some steps require provider API keys and can incur cost. Large raw outputs and trained model checkpoints are treated as artifacts rather than normal git-tracked source.
+Some steps require provider API keys and can incur cost. The saved v2 outputs in `results/v2/` are the outputs used for the final analysis, so the analysis tables and figures can be regenerated without rerunning judges.
 
-## Report Build
-
-Compile the thesis from the `report/` directory:
+## Setup
 
 ```bash
-cd report
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev,judges,poison]"
+```
+
+Copy `.env.example` to `.env` and add local API keys if running judge or generation jobs. `.env` is ignored by Git.
+
+## Regenerating Final Analysis
+
+From the repository root:
+
+```bash
+python scripts/analyze.py
+python scripts/plot.py
+```
+
+Outputs are written to `exports/`.
+
+This step expects the local v2 dataset and split files under `data/v2_fixed_poisonedrag/`
+and `data/v2_splits/`. Those files can be regenerated with Phase 1 or restored from the
+dataset artifact used for the thesis submission; judge API calls are not needed for this
+analysis-only step.
+
+Key outputs:
+
+| Output | Purpose |
+|---|---|
+| `exports/table_baseline_summary.csv` | Baseline judge false-positive rates. |
+| `exports/table_mistral_metrics.csv` | Mistral filter metrics. |
+| `exports/table_filter_audit.csv` | What the statistical filter removed by attack type. |
+| `exports/table_paradox_overview.csv` | Clean / Survived / True decomposition. |
+| `exports/table_mcnemar_bootstrap.csv` | Question-clustered significance checks. |
+| `exports/figures/` | Final report figures. |
+
+The code-flow notes in `docs/code-flow/` give a phase-by-phase walkthrough of how the saved outputs, exports, and report connect.
+
+## Report
+
+The report source is in `report/`.
+
+Compile from inside `report/`:
+
+```bash
 pdflatex -interaction=nonstopmode main.tex
 bibtex main
 pdflatex -interaction=nonstopmode main.tex
 pdflatex -interaction=nonstopmode main.tex
 ```
 
-The generated `main.pdf` is useful for review, but the push strategy treats PDFs as release artifacts unless you explicitly decide to version the final submitted PDF.
+`report/README.md` contains report-specific notes.
 
-## Documentation
+## What Is Tracked
 
-- [docs/GIT_PUSH_STRATEGY.md](docs/GIT_PUSH_STRATEGY.md): what to include in the separate thesis repository, what to exclude, and the exact push sequence.
-- [report/README.md](report/README.md): LaTeX-specific notes.
+The repository is intended to track:
 
-## Reproducibility Notes
+- source code in `src/`, `scripts/`, and `pipeline.py`
+- final configuration in `config/`
+- final report source in `report/`
+- final compact analysis exports in `exports/`
+- final v2 saved experiment outputs needed to reproduce the submitted analysis
+- documentation in `docs/`
+- Kaggle notebook/code used for GPU-based Phase 3 and Phase 4 steps
 
-The repository is designed to be source-first. The initial git push should contain the code, configuration, LaTeX source, compact final exports, and documentation. Large datasets, raw provider outputs, and model checkpoints should be distributed through Git LFS, GitHub Releases, Zenodo, Google Drive, or another artifact store with checksums.
+The repository is not intended to track:
+
+- API keys or `.env`
+- generated LaTeX build files
+- Python cache files
+- local virtual environments
+- model checkpoint binaries
+- legacy result folders and archived outputs

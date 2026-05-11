@@ -1,74 +1,80 @@
 % Front Matter (Title page, Abstract, ToC, Lists)
 
+\hypersetup{pageanchor=false}
 \begin{titlepage}
+    \begin{singlespace}
+    \begin{flushleft}
+        \includegraphics[width=0.24\textwidth]{emlyon_logo.png}
+    \end{flushleft}
+
+    \vspace*{1.4cm}
+
     \begin{center}
-        \vspace*{1cm}
-        
-        % Logo (Changed from .avif to .png)
-        \includegraphics[width=0.4\textwidth]{emlyon_logo.png}
-        
-        \vspace{1.5cm}
-        
-        % University Name
-        {\LARGE \textbf{EMLYON BUSINESS SCHOOL}}
-        
-        \vspace{0.5cm}
-        
-        % Degree Program
-        {\Large \emph{Master of Science in Data Science \& AI Strategy}}
-        
-        \vspace{2cm}
-        
-        % Document Type
-        {\Large \textbf{MASTER THESIS}}
-        
-        \vspace{1.5cm}
-        
-        % Thesis Title
-        {\huge \textbf{Meta-Evaluation of LLM Judges:\\ Quantifying Robustness to Poisoned Context and\\ Lightweight Pre-filtering}}
-        
-        \vspace{2.5cm}
-        
-        % Author
-        Submitted by\\[0.3cm]
-        {\Large \textbf{Adesh Gaurav}}
-        
-        \vspace{1.5cm}
-        
-        % Supervisor
-        Supervisor\\[0.3cm]
-        {\large \emph{Dr. Waad Al Masri}}
-        
+        {\large \textbf{Adesh Gaurav}}
+
+        \vspace{0.8cm}
+
+        {\large \textbf{\underline{Promotion 2026}}}
+
+        \vspace{2.0cm}
+
+        {\large \textbf{MSc in Data Science and Artificial Intelligence Strategy}}
+
+        \vspace{0.8cm}
+
+        {\large \textbf{Dissertation}}
+
+        \vspace{0.8cm}
+
+        \begin{minipage}{0.85\textwidth}
+            \centering
+            {\Large \textbf{Meta-Evaluation of LLM Judges:\\ Quantifying Robustness to Poisoned Context and\\ Lightweight Pre-filtering}}
+        \end{minipage}
+
+        \vspace{2.2cm}
+
+        {\large Submission date: 11 May 2026}
+
         \vfill
-        
-        % Year
-        {\large \textbf{2026}}
-        
-        \vspace*{1cm}
+
+        {\large Student: Adesh Gaurav}
+
+        \vspace{0.6cm}
+
+        {\large Supervisory Professor: Dr. Waad Al Masri}
     \end{center}
+    \end{singlespace}
 \end{titlepage}
 
-\begin{abstract}
+\clearpage
+\setcounter{page}{2}
+\hypersetup{pageanchor=true}
+\pagestyle{thesis}
 
-The LLM-as-a-Judge paradigm has now become a de facto methodology for evaluating RAG at scale. Two open research questions persist: (1) are the judges still faithful under corpus poisoning, and (2) can pre-filters recover this faithfulness? This thesis answers both questions head-on. We perform a systematic meta-evaluation of three current LLM judges, GPT-5.4-nano, Gemma-4-26B-A4B-IT, and DeepSeek-V3.2, under controlled corpus poisoning, and investigate two pre-filter strategies in an end-to-end evaluation through a residual-aware decomposition of post-filter judge behavior.
+\chapter*{Abstract}
 
-We create a Poisoned Evaluation Dataset of 2,400 question-context-answer triplets taken from HotpotQA (1,200 poisoned, 1,200 matching clean controls) covering three insertion attack types of varying adversarial sophistication: random noise, adversarial fact rewriting, and a PoisonedRAG-style targeted attack that uses Gemini-2.5-flash-lite to inject a wrong-answer-supporting passage. All at four distinct levels of poisoning intensity (0.2--0.8), we test three judges on the three RAGAS dimensions in baseline and post-filter scenarios, and we test two pre-filters in an end-to-end configuration. The two pre-filters examined are: a statistical passage-level filtering pipeline (five indicators-embedding cosine anomaly, GPT-2 perplexity, a fine-tuned DeBERTa-v3-small classifier, cross-encoder relevance, and answer token recall-are aggregated through XGBoost), and an LLM-level triplet-filtering model (using Mistral-small-latest).
+LLM-as-a-Judge is the standard way to evaluate Retrieval-Augmented Generation (RAG) at scale, and that standard rests on two assumptions that have not been tested together. The first is that current LLM judges remain reliable when the retrieved context has been poisoned. The second is that a lightweight pre-filter sitting in front of the judge can repair reliability when it breaks. This thesis tests both, on three contemporary judges (GPT-5.4-nano, Gemma-4-26B-A4B-IT, and DeepSeek-V3.2) and on two filter designs, evaluated end-to-end with a residual-aware decomposition of what the judge actually sees after filtering.
 
-We observe baseline faithfulness FPRs ranging from 0.412 (DeepSeek) to 0.699 (Gemma); qualitatively different calibration regimes were identified for the three judges. Despite robust classifier performance, both pre-filter strategies yielded slightly improved downstream judges when given clean input. Only DeepSeek, given an adversarial input intended to improve judge faithfulness by modifying passages supporting the correct answer (True subset of poisoned data), and at a severity level that would naturally affect only that subset, achieved a statistically significant improvement (corrected p = 0.099) with respect to the statistical filter and Judges. The statistical filter does not, however, improve Judges on the True subset when judged with Mistral-Small-latest; however, the LLM filter does boost Judge performance on the True subset for all judges. A comparison of all three models for a residual-aware decomposition demonstrates that the end-to-end strategy with the statistical filter leads to significant accuracy increases in the Survived subset for PoisonedRAG-style triplets (by +0.377 on faithfulness, corrected p = 0.012) when the attack was strongest. The two best results are not caused by the intended logical effects of attack targeting, but rather by the unintended logical consequence of an overly short resulting context from filter's reduction of original context passages from an average of 11.6 to 7.1 (correlating with higher faithfulness: post-filter Pearson r 0.31--0.47 vs. ~0.1 at baseline), where the original context's distracting content was removed. It is evident that Judges cannot inherently overcome corpus poisoning through inherent mechanisms and only by cleaning up residual contexts and ensuring more concise information are they robust.
+The benchmark for the study is a Poisoned Evaluation Dataset built on HotpotQA: 2{,}400 question-context-answer triplets, half poisoned and half matched clean controls. Three injection types are used, in order of adversarial sophistication: random noise, adversarial fact rewriting, and a PoisonedRAG-style targeted attack in which a passage is injected to support the wrong answer. Each is applied at four poisoning intensities between 0.2 and 0.8. Judges score every triplet on three RAGAS dimensions, before and after pre-filtering. The first pre-filter is statistical and operates at the passage level. It combines five signals (embedding cosine anomaly, token-level entropy, a fine-tuned DeBERTa-v3-small classifier, cross-encoder relevance, and answer-span recall) through an XGBoost aggregator. The second is an LLM-level triplet classifier built on Mistral-small-latest.
+
+The baseline numbers already tell most of the story. Faithfulness False Positive Rates span a wide band, from 0.412 for DeepSeek to 0.699 for Gemma, and the three judges sit in qualitatively different calibration regimes. The statistical pre-filter looks strong on its own terms, hitting F1\,=\,0.929 on the held-out test set. End-to-end, the picture flips. Both pre-filter strategies can make judge reliability on poisoned contexts worse, not better. To see what is going on, we split the originally-poisoned triplets into two subsets: a True subset, where the supporting passage was overwritten by the attack, and a Survived subset, where the supporting passage came through intact. On the True subset, the statistical filter raises faithfulness scores for all three judges. This is the wrong direction for a defence. The shift for DeepSeek approaches significance after question-clustered bootstrap correction (corrected p\,=\,0.099). The clearest and most statistically robust effect is on the Survived subset for PoisonedRAG-style triplets, where DeepSeek's mean faithfulness climbs by 0.377 (corrected p\,=\,0.012). On still-poisoned contexts, rising faithfulness is a failure mode, not a success. The mechanism behind this is mundane: distractor removal. The filter cuts mean context length from 11.6 to 7.1 passages, and judges then score the shorter, more topically focused residuals as more faithful regardless of whether the surviving content actually supports the answer. The post-filter Pearson correlation between context length and faithfulness rises to between 0.31 and 0.47, against weaker and less consistent baseline correlations.
+
+The implication runs against the intuition that drove the design. Lightweight pre-filtering in its current form does not reliably restore judge reliability under corpus poisoning. On the cases where mitigation matters most, it can push the judge further in the wrong direction.
 
 \textbf{Keywords:} LLM-as-a-Judge, Retrieval-Augmented Generation, Adversarial Robustness, Context Poisoning, Meta-Evaluation, Pre-filtering, True/Survived Decomposition, Automated Evaluation, RAG Security.
 
-\end{abstract}
-
 \chapter*{Acknowledgements}
 
-I would like to thank my supervisor, Dr. Waad Al Masri, for guidance and feedback throughout this research.
+I would like to thank all my professors at emlyon business school for the learning, guidance, and encouragement they provided throughout the MSc in Data Science and Artificial Intelligence Strategy. I am especially grateful to my supervisor, Dr. Waad Al Masri, for her guidance, patience, and thoughtful feedback throughout this research. Her support helped me shape the topic more clearly, stay focused through the difficult parts of the thesis, and turn the experimental work into a coherent academic contribution.
 
 I am especially grateful to Chloe Guiga, Aurelien Thomann, Yassine Filali, and the AIRTech Team for giving me the opportunity to work on this topic and explore this field during my internship. Their encouragement pushed me to read through the research papers, understand the practical problems around RAG evaluation, and develop the evaluation pipeline using LLM-as-a-Judge methods. That internship experience motivated me to take this area seriously and shaped the direction of this thesis.
+
+I would also like to thank Franck JAOTOMBO, Saeed Varasteh Yazdi, and Dr. Imène BRIGUI. Franck taught us to look beyond the surface of machine learning methods and to understand the mathematics that makes them work. Saeed made complex deep learning concepts easier to understand and supported me throughout the programme, including during hackathons, while motivating me to keep learning. I am also grateful to Dr. Imène BRIGUI, as Programme Director, for the opportunity to be part of the MSc in Data Science and Artificial Intelligence Strategy.
 
 I would also like to thank my friends from emlyon for their support, conversations, and encouragement throughout the year. Finally, I am grateful to my family and friends for their patience and support during the thesis process.
 
 
+\clearpage
 \tableofcontents
 
 \listoffigures

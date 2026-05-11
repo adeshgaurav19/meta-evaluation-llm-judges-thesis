@@ -5,7 +5,7 @@ This directory contains the LaTeX source for the master thesis:
 **Meta-Evaluation of LLM Judges: Quantifying Robustness to Poisoned Context and Lightweight Pre-filtering**
 
 Author: Adesh Gaurav  
-Programme: MSc in Data Science and AI Strategy, emlyon business school
+Programme: MSc in Data Science and Artificial Intelligence Strategy, emlyon business school
 
 ## Structure
 
@@ -23,7 +23,6 @@ Programme: MSc in Data Science and AI Strategy, emlyon business school
 | `08_appendices.tex` | Appendices. |
 | `references.bib` | BibTeX bibliography database. |
 | `Images/` | Report images used by the LaTeX source. |
-| `human_rewrite_from_methodology.md` | Editable prose extraction from Chapter 3 onward, kept as a writing aid. |
 
 Generated LaTeX files such as `.aux`, `.bbl`, `.log`, `.out`, `.toc`, `.lof`, `.lot`, and generated PDFs are ignored by git.
 
@@ -42,7 +41,7 @@ The output is `main.pdf`. The repository strategy treats the PDF as a release ar
 
 ## Editing Workflow
 
-For thesis text, edit the chapter `.tex` files directly. For prose-heavy editing from Chapter 3 onward, use `human_rewrite_from_methodology.md` as a scratch/editing bridge, then transfer accepted changes back into the corresponding `.tex` chapter.
+For thesis text, edit the chapter `.tex` files directly.
 
 When adding figures:
 

@@ -1,0 +1,43 @@
+{
+  "embedding": {
+    "n_triplets": 50,
+    "latency_mean_ms": 223.96326083689928,
+    "latency_std_ms": 191.34682616707377,
+    "latency_p50_ms": 204.35279188677669,
+    "latency_p95_ms": 383.35404386743886,
+    "latency_p99_ms": 1074.9982265755525,
+    "peak_memory_mean_mb": 0.11771608,
+    "peak_memory_max_mb": 0.18926,
+    "throughput_triplets_per_sec": 4.465018040294777,
+    "avg_passages_per_triplet": 10
+  },
+  "entropy": {
+    "n_triplets": 50,
+    "latency_mean_ms": 1122.8926666546613,
+    "latency_std_ms": 237.82701207367737,
+    "latency_p50_ms": 1078.594458522275,
+    "latency_p95_ms": 1504.406527103856,
+    "latency_p99_ms": 1732.1430931845678,
+    "peak_memory_mean_mb": 0.0379604,
+    "peak_memory_max_mb": 0.054925,
+    "throughput_triplets_per_sec": 0.8905570672032395,
+    "avg_passages_per_triplet": 10
+  },
+  "classifier": {
+    "n_triplets": 50,
+    "latency_mean_ms": 0.09453913196921349,
+    "latency_std_ms": 0.03905707882727437,
+    "latency_p50_ms": 0.08497899398207664,
+    "latency_p95_ms": 0.12125964276492596,
+    "latency_p99_ms": 0.2401721198111768,
+    "peak_memory_mean_mb": 0.01933248,
+    "peak_memory_max_mb": 0.029141,
+    "throughput_triplets_per_sec": 10577.63043906145,
+    "avg_passages_per_triplet": 10
+  },
+  "full_pipeline": {
+    "total_latency_ms": 82948.61066574231,
+    "peak_memory_mb": 3.724168,
+    "throughput_triplets_per_sec": 0.6027828507156654
+  }
+}

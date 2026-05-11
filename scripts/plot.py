@@ -36,6 +36,7 @@ C = {
 JUDGE_ORDER  = ["GPT", "GEMINI", "DEEPSEEK"]
 JUDGE_LABELS = {"GPT": "GPT-5.4-nano", "GEMINI": "Gemma-4-26B", "DEEPSEEK": "DeepSeek-V3.2"}
 INJ_ORDER    = ["random_noise", "adversarial_fact", "poisonedrag_style"]
+TRUE_INJ_ORDER = ["random_noise", "adversarial_fact"]
 INJ_LABELS   = {
     "random_noise":      "Random Noise",
     "adversarial_fact":  "Adversarial Fact",
@@ -203,45 +204,59 @@ def fig04(df: pd.DataFrame, metric: str, letter: str):
         "answer_relevance":  "Answer Relevance",
     }
     cond_cfg = [
-        ("baseline",       C["Clean"],        "Baseline-True"),
-        ("postfilter",     C["Postfilter"],    "Postfilter-True"),
-        ("postfilter_llm", C["PostfilterLLM"], "PostfilterLLM-True"),
+        ("baseline",       C["Clean"],        "Baseline"),
+        ("postfilter",     C["Postfilter"],    "Stat filter"),
+        ("postfilter_llm", C["PostfilterLLM"], "LLM filter"),
     ]
     x = np.arange(len(cond_cfg))
-    w = 0.45
+    w = 0.62
 
-    fig, axes = plt.subplots(3, 3, figsize=(12, 9), sharey=True)
+    fig, axes = plt.subplots(len(TRUE_INJ_ORDER), 3, figsize=(12.5, 6.9), sharey=True)
 
     for ji, judge in enumerate(JUDGE_ORDER):
-        for ii, inj in enumerate(INJ_ORDER):
+        for ii, inj in enumerate(TRUE_INJ_ORDER):
             ax = axes[ii][ji]
             vals = []
+            ns = []
             for cond, col, lbl in cond_cfg:
-                v = df[(df["condition"]==cond) & (df["judge"]==judge) &
-                       (df["injection_type"]==inj) & (df["category"]=="True")][metric].mean()
+                sub = df[(df["condition"]==cond) & (df["judge"]==judge) &
+                         (df["injection_type"]==inj) & (df["category"]=="True")]
+                v = sub[metric].mean()
                 vals.append(v)
+                ns.append(len(sub[metric].dropna()))
             bars = ax.bar(x, vals, w, color=[col for _, col, _ in cond_cfg])
 
-            # Delta annotations vs baseline
-            for bi in [1, 2]:
-                if not (np.isnan(vals[0]) or np.isnan(vals[bi])):
-                    delta = vals[bi] - vals[0]
-                    ax.text(bi, vals[bi] + 0.02, f"{delta:+.2f}",
-                            ha="center", fontsize=7.5,
-                            color=cond_cfg[bi][1], fontweight="bold")
+            for bi, value in enumerate(vals):
+                if np.isnan(value):
+                    continue
+                if bi == 0:
+                    label = f"{value:.2f}"
+                    color = "#333333"
+                else:
+                    delta = value - vals[0]
+                    label = f"{delta:+.2f}"
+                    color = cond_cfg[bi][1]
+                ax.text(bi, min(value + 0.025, 1.04), label,
+                        ha="center", fontsize=9, color=color, fontweight="bold")
 
             ax.set_xticks(x)
-            ax.set_xticklabels(["Base", "Stat", "LLM"], fontsize=8)
-            ax.set_ylim(0, 1.15)
+            ax.set_xticklabels([lbl for _, _, lbl in cond_cfg], fontsize=8)
+            ax.set_ylim(0, 1.05)
+            ax.grid(axis="y", alpha=0.25, linewidth=0.8)
             if ii == 0:
                 ax.set_title(JUDGE_LABELS[judge], fontsize=10)
             if ji == 0:
-                ax.set_ylabel(INJ_LABELS[inj], fontsize=9)
+                ax.set_ylabel(f"{INJ_LABELS[inj]}\nMean score", fontsize=9)
+            ax.text(0.98, 0.05, f"n={ns[0]}", transform=ax.transAxes,
+                    ha="right", va="bottom", fontsize=8, color="#555555")
 
     patches = [mpatches.Patch(color=col, label=lbl) for _, col, lbl in cond_cfg]
-    fig.legend(handles=patches, loc="lower center", ncol=3, fontsize=9, bbox_to_anchor=(0.5, -0.01))
-    fig.suptitle(f"True-category {metric_labels[metric]} by injection type and judge", y=1.01)
-    plt.tight_layout()
+    fig.legend(handles=patches, loc="lower center", ncol=3, fontsize=9, bbox_to_anchor=(0.5, 0.0))
+    fig.text(0.5, 0.055,
+             "Values above baseline bars show means; values above filtered bars show change from baseline within the same judge and attack.",
+             ha="center", fontsize=9, color="#444444")
+    fig.suptitle(f"True-category {metric_labels[metric]} by replacement attack and judge", y=0.985)
+    plt.tight_layout(rect=[0.02, 0.10, 1.0, 0.95])
     fname = f"fig04{letter}_per_injection_{metric.split('_')[0]}.png"
     save(fname)
 
@@ -384,73 +399,33 @@ def fig08(audit_sum: pd.DataFrame):
     w = 0.17
     offsets = np.linspace(-(n-1)*w/2, (n-1)*w/2, n)
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4), sharey=True)
-    ft_labels = {"statistical": "Statistical filter", "llm": "LLM filter (Mistral)"}
+    fig, ax = plt.subplots(1, 1, figsize=(11.5, 5.6))
+    sub = audit_sum[audit_sum["filter_type"] == "statistical"]
 
-    for ax, ft in zip(axes, ["statistical", "llm"]):
-        sub = audit_sum[audit_sum["filter_type"] == ft]
-        for bi, (col_name, col, label) in enumerate(cols_cfg):
-            vals = [sub[sub["injection_type"]==inj][col_name].values[0]
-                    if not sub[sub["injection_type"]==inj].empty else 0
-                    for inj in INJ_ORDER]
-            ax.bar(x + offsets[bi], vals, w, color=col,
-                   label=label if ft=="statistical" else "_nolegend_")
+    for bi, (col_name, col, label) in enumerate(cols_cfg):
+        vals = [sub[sub["injection_type"]==inj][col_name].values[0]
+                if not sub[sub["injection_type"]==inj].empty else 0
+                for inj in INJ_ORDER]
+        ax.bar(x + offsets[bi], vals, w, color=col, label=label)
 
-            # Bold annotation for collateral-loss bars
-            if col_name == "mean_supporting_passages_lost_collateral":
-                for xi, v in zip(x + offsets[bi], vals):
-                    if v > 0.005:
-                        ax.text(xi, v + 0.01, f"{v:.3f}", ha="center", fontsize=8,
-                                color=col, fontweight="bold")
+        if col_name == "mean_supporting_passages_lost_collateral":
+            for xi, v in zip(x + offsets[bi], vals):
+                if v > 0.005:
+                    ax.text(xi, v + 0.04, f"{v:.2f}", ha="center", fontsize=8,
+                            color=col, fontweight="bold")
 
-        ax.set_xticks(x)
-        ax.set_xticklabels([INJ_LABELS[i] for i in INJ_ORDER], fontsize=9)
-        ax.set_xlabel("Injection type")
-        ax.set_title(ft_labels[ft])
-        if ft == "statistical":
-            ax.set_ylabel("Mean passages per poisoned triplet")
-
-    axes[0].legend(fontsize=8, loc="upper right", ncol=1)
-    fig.suptitle("Filter audit: passage outcomes by injection type", y=1.02)
-    plt.tight_layout()
+    ax.set_xticks(x)
+    ax.set_xticklabels([INJ_LABELS[i] for i in INJ_ORDER], fontsize=9)
+    ax.set_xlabel("Injection type")
+    ax.set_ylabel("Mean passages per originally poisoned triplet")
+    ax.grid(axis="y", alpha=0.25, linewidth=0.8)
+    ax.legend(fontsize=8, loc="upper center", ncol=4, bbox_to_anchor=(0.5, -0.13))
+    fig.suptitle("Statistical filter passage-level audit by injection type", y=1.02)
+    fig.text(0.5, 0.02,
+             "The LLM filter is omitted here because it makes triplet-level decisions and does not remove individual passages.",
+             ha="center", fontsize=9, color="#444444")
+    plt.tight_layout(rect=[0.02, 0.08, 1.0, 0.98])
     save("fig08_filter_audit.png")
-
-
-# captions
-
-CAPTIONS = """\
-# Figure captions
-
-**fig01_baseline_calibration.png**
-Histograms of baseline faithfulness scores for clean and poisoned triplets, one panel per judge (GPT-5.4-nano, Gemma-4-26B, DeepSeek-V3.2). The dashed vertical line marks the 0.5 threshold; poisoned triplets scoring above this threshold constitute false positives.
-
-**fig02_paradox_headline.png**
-Mean faithfulness by category (Clean, Standard, True, Survived) across the three judging conditions (Baseline, Postfilter-stat, Postfilter-LLM). The Delta annotations on True-category bars show the change from the baseline condition; a positive value indicates the paradox - statistical filtering increases the mean faithfulness of the most severely compromised triplets.
-
-**fig03_true_mean_by_noise.png**
-True-category mean faithfulness as a function of noise level (0.2-0.8) for each judge. Annotations on the statistical-postfilter line at noise levels 0.2 and 0.8 highlight the cross-over effect: low-noise attacks become relatively more dangerous after filtering than high-noise attacks.
-
-**fig04a_per_injection_faithfulness.png**
-True-category faithfulness for each combination of judge (columns) and injection type (rows) under Baseline, statistical-Postfilter, and LLM-Postfilter conditions. Delta annotations above Postfilter and LLM bars show the change from Baseline; positive values indicate that the filter paradox is injection-type-specific.
-
-**fig04b_per_injection_context.png**
-As Figure 4a, but for context relevance scores.
-
-**fig04c_per_injection_answer.png**
-As Figure 4a, but for answer relevance scores.
-
-**fig05_filter_behaviour.png**
-Effect of each filter on the True/Survived split of originally-poisoned triplets, shown before (darker bars) and after (lighter bars) filtering. For the LLM filter, Mistral's triplet-level flag determines routing; the passage split is unchanged since the LLM filter does not modify context content.
-
-**fig06_inter_judge_variance.png**
-Distribution of per-triplet faithfulness standard deviation across the three judges under baseline conditions, separated by clean and poisoned triplets. The annotated Pearson r characterises the correlation between judge disagreement and ground-truth poisoning status.
-
-**fig07_mcnemar.png**
-McNemar chi-square statistics testing whether the proportion of faithfulness false positives changes significantly between the baseline and each postfilter condition, restricted to the True category. Asterisks denote significance: * p < 0.05, ** p < 0.01, *** p < 0.001; n.s. = not significant.
-
-**fig08_filter_audit.png**
-Mean per-triplet passage counts by outcome type and injection type for both filter strategies. The boldly annotated collateral-loss bars (orange) quantify how often each filter mistakenly removes non-poisoned passages that originally supported the correct answer; this is the key operational safety metric.
-"""
 
 
 # main
@@ -476,8 +451,6 @@ def main():
     fig07(mcnemar)
     fig08(audit_sum)
 
-    (FIGS / "captions.md").write_text(CAPTIONS)
-    print("  captions.md")
     print(f"\nAll figures saved to exports/figures/")
 
 

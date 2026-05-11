@@ -1,15 +1,15 @@
 % =============================================================
 %  Master Thesis - Meta-Evaluation of LLM Judges
 %  Adesh Gaurav | EMLYON Business School
-%  MSc Data Science & AI Strategy | 2026
+%  MSc in Data Science and Artificial Intelligence Strategy | 2026
 % =============================================================
 
-\documentclass[11pt,a4paper,oneside]{report}
+\documentclass[12pt,a4paper,oneside]{report}
 
 % ---------- Packages ----------
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{lmodern}
+\usepackage{mathptmx}
 \usepackage[english]{babel}
 \usepackage[a4paper,margin=1in]{geometry}
 \usepackage{microtype}
@@ -28,6 +28,7 @@
 \usepackage{amsmath,amssymb}
 \usepackage{csquotes}
 \usepackage[round,authoryear]{natbib}
+\usepackage{fancyhdr}
 
 % Pandoc/word-processor exports leave a few Unicode mathematical symbols in prose.
 % These declarations keep the source compatible with pdfLaTeX.
@@ -47,16 +48,36 @@
   pdftitle={Meta-Evaluation of LLM Judges: Quantifying Robustness to Poisoned Context and Lightweight Pre-filtering}
 }
 
+% ---------- Footer ----------
+\fancypagestyle{thesis}{
+  \fancyhf{}
+  \fancyfoot[L]{Adesh Gaurav}
+  \fancyfoot[R]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[L]{Adesh Gaurav}
+  \fancyfoot[R]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+\setlength{\headheight}{15pt}
+
 % ---------- Spacing ----------
-\onehalfspacing
+\doublespacing
 
 % ---------- Front matter, body, back matter included from per-chapter files ----------
 \begin{document}
+\pagenumbering{arabic}
+\pagestyle{empty}
 
 % ----- Front matter (title page, abstract, résumé, ToC, lists) -----
 \input{00_frontmatter.tex}
 
 % ----- Body chapters -----
+\clearpage
 \input{01_introduction.tex}
 \input{02_literature_review.tex}
 \input{03_methodology.tex}

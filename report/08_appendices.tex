@@ -1,9 +1,8 @@
 % Appendices
 
-\chapter*{Appendices}
+\appendix
 
-\phantomsection
-\section*{Appendix A: Evaluation Prompt Templates}
+\chapter{Evaluation Prompt Templates}
 \label{app:evaluation-prompts}
 
 The prompt templates below are the templates used by the scoring and
@@ -141,8 +140,7 @@ Scoring guide:
   this score.
 \end{verbatim}
 
-\phantomsection
-\section*{Appendix B: Attack Construction Prompts}
+\chapter{Attack Construction Prompts}
 \label{app:attack-prompts}
 
 The prompts below are the generation instructions used to construct the
@@ -190,8 +188,7 @@ Target wrong answer to support: {target_wrong_answer}
 Original context: {context}
 \end{verbatim}
 
-\phantomsection
-\section*{Appendix C: Operational Definitions}
+\chapter{Operational Definitions}
 \label{app:definitions}
 
 \begin{description}[leftmargin=3.4cm, style=nextline]
@@ -258,8 +255,9 @@ Original context: {context}
     with XGBoost to decide which passages to remove.
 
     \item[LLM Filter]
-    The triplet-level Mistral filter that flags a whole triplet rather than
-    modifying its context.
+    The triplet-level Mistral filter that inspects the full question-context-answer
+    triplet, flags suspected adversarial passage indices, and removes those
+    passages before judge scoring.
 
     \item[McNemar Test]
     A paired test used here to compare whether the same triplets cross the
@@ -271,8 +269,7 @@ Original context: {context}
     same HotpotQA question.
 \end{description}
 
-\phantomsection
-\section*{Appendix D: Poisoned Dataset Schema and Examples}
+\chapter{Poisoned Dataset Schema and Examples}
 \label{app:schema}
 
 The Poisoned Evaluation Dataset is released in JSONL format with the following
@@ -315,13 +312,62 @@ PrefilterScore:
   ground_truth_poisoned: bool
 \end{verbatim}
 
-Representative examples for the three injection types are stored in
-\texttt{data/v2\_fixed\_poisonedrag/}. The final analysis tables derived from
-these triplets are exported in \texttt{exports/}, which is the canonical result
+Representative examples for the three injection types are stored in the fixed
+PoisonedRAG data directory. The final analysis tables derived from these
+triplets are exported in \texttt{exports/}, which is the canonical result
 directory used for the submitted analysis.
 
-\phantomsection
-\section*{Appendix E: Pre-filter Configuration}
+\chapter{Additional Experimental Results and Ablation Tables}
+\label{app:additional-results}
+
+All thesis-ready CSV tables are exported under \texttt{exports/}. This includes
+baseline FPR by judge, per-injection and per-noise breakdowns, pre-filter test
+metrics, Mistral filter metrics, McNemar tests, bootstrap checks,
+inter-judge-variance tables, length correlations, collateral-damage audits,
+per-signal ablations, per-injection signal ablations, classifier-backbone
+comparisons, and the distractor-stratified paradox analysis. Thesis figures are
+stored under \texttt{exports/figures/}.
+
+Table~\ref{tab:appendix-signal-ablation} reports validation behaviour under a
+reduced ablation protocol and is used only to compare the relative contribution
+of signals within that protocol. It is not directly comparable to the held-out
+test-set classifier performance reported in Table~\ref{tab:stat-filter-performance}.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Minimal per-signal ablation report under the reduced validation ablation protocol. Each row removes one signal from the statistical pre-filter and recomputes validation performance.}
+\label{tab:appendix-signal-ablation}
+\begin{tabular}{lrrrr}
+\toprule
+Removed signal & Precision & Recall & F1 & $\Delta$F1 \\
+\midrule
+Embedding cosine & 0.354 & 0.483 & 0.408 & +0.000 \\
+Entropy & 0.315 & 0.577 & 0.407 & -0.001 \\
+Classifier & 0.289 & 0.548 & 0.378 & -0.030 \\
+Cross-encoder & 0.299 & 0.518 & 0.379 & -0.029 \\
+Answer span recall & 0.326 & 0.486 & 0.390 & -0.018 \\
+None (all signals) & 0.315 & 0.577 & 0.408 & 0.000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Classifier backbone ablation. Both models are trained on the same split with matched hyperparameters.}
+\label{tab:appendix-classifier-ablation}
+\begin{tabular}{lr}
+\toprule
+Classifier backbone & Validation F1 \\
+\midrule
+DeBERTa-v3-small & 0.7215 \\
+RoBERTa-base & 0.7202 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\chapter{Experimental Configuration}
 \label{app:config}
 
 The final v2 configuration is stored in \texttt{config/v2.yaml}. It records the
@@ -329,24 +375,14 @@ HotpotQA sample size, four noise levels (0.2, 0.4, 0.6, 0.8), three injection
 types, judge model identifiers, pre-filter signal thresholds, XGBoost
 aggregation settings, and the Mistral triplet-level filter configuration.
 
-\phantomsection
-\section*{Appendix F: Additional Experimental Results}
-\label{app:additional-results}
-
-All thesis-ready CSV tables are exported under \texttt{exports/}. This includes
-baseline FPR by judge, per-injection and per-noise breakdowns, pre-filter test
-metrics, Mistral filter metrics, McNemar tests, bootstrap checks,
-inter-judge-variance tables, length correlations, collateral-damage audits, and
-the distractor-stratified paradox analysis. Thesis figures are stored under
-\texttt{exports/figures/}.
-
-\phantomsection
-\section*{Appendix G: Source Code and Reproducibility}
+\chapter{Source Code and Reproducibility}
 \label{app:reproducibility}
 
 The Python environment is specified in \texttt{pyproject.toml}. The final
 analysis workflow uses existing v2 JSON outputs and regenerates polished tables
 with \texttt{python scripts/analyze.py}; figures are regenerated with
 \texttt{python scripts/plot.py}. The resulting submission artefacts are written
-to \texttt{exports/}. API keys are loaded from environment variables and are not
-included in the repository.
+to \texttt{exports/}. The code repository is available online as the
+\href{https://github.com/adeshgaurav19/meta-evaluation-llm-judges-thesis}{GitHub repository}.
+API keys are loaded from environment variables and are not included in the
+repository.

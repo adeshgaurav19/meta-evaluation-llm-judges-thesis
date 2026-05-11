@@ -20,16 +20,16 @@ The order of these phases is intentional; Phase~3 is informed by the empirical f
 
 \subsection{Ethical considerations}
 
-The work involves synthesising adversarial content for experimental purposes inside a sandboxed evaluation environment. All adversarial passages are generated only for controlled offline analysis and are not deployed against any production system. The attack constructions are taken from published literature \citep{zou2025poisonedrag} and are presented to inform defensive research. The Poisoned Evaluation Dataset will be released with documentation and intended-use guidelines. No personal data is involved.
+The work involves synthesising adversarial content for experimental purposes inside a local evaluation environment. All adversarial passages are generated only for controlled offline analysis and are not deployed against any production system. The attack constructions are taken from published literature \citep{zou2025poisonedrag} and are presented to inform defensive research. The Poisoned Evaluation Dataset will be released with documentation and intended-use guidelines. No personal data is involved. The generated content is meant for the defence of evaluation systems and is not intended to cause harm.
 
 \section{Phase 1: Dataset construction}
 \label{sec:phase1}
 
 \subsection{Base benchmark}
 
-We use HotpotQA in its distractor setting as the base benchmark. HotpotQA satisfies three properties relevant to this study. It requires multi-hop reasoning over multiple context passages, which is representative of the retrieval scenarios in which RAG systems operate and are most vulnerable. It provides ground-truth supporting passage indices and distractor passages per question, which lets us label poisoned passage indices exactly for supervised pre-filter training and for the True/Survived decomposition introduced in Section~\ref{sec:true-survived}. Finally, it is the base benchmark used in the original PoisonedRAG evaluation \citep{zou2025poisonedrag}, which permits direct comparison with prior work on RAG security.
+We use the HotpotQA dataset \citep{yang2018hotpotqa} in its distractor setting as the base benchmark because it satisfies three properties relevant to this study. First, it requires multi-hop reasoning over multiple context passages, which reflects the retrieval scenarios in which enterprise RAG systems often operate and are most vulnerable. Second, it provides ground-truth supporting passage indices and distractor passages per question, which lets us label poisoned passage indices exactly for supervised pre-filter training and for the True/Survived decomposition introduced in Section~\ref{sec:true-survived}. Third, it is the base benchmark used in the original PoisonedRAG evaluation \citep{zou2025poisonedrag}, which permits direct comparison with prior work on RAG security. We wanted a benchmark that satisfied all the requirements and was already recognised in prior work.
 
-We sample 100 HotpotQA hard questions whose answers require two supporting passages. These 100 base questions form the foundation of all 2{,}400 evaluation triplets in the final dataset.
+We sample a set of 100 HotpotQA hard questions whose answers require two supporting passages. These 100 base questions form the foundation of all 2{,}400 evaluation triplets in the final dataset. We choose 100 base questions to keep the full three-judge, multi-condition evaluation feasible while preserving balanced cells across attack type and noise level.
 
 \subsection{Triplet construction}
 
@@ -41,7 +41,9 @@ N = N_{q} \times N_{\mathrm{inj}} \times N_{\rho} \times 2 = 100 \times 3 \times
 \end{equation}
 This yields 1{,}200 poisoned and 1{,}200 clean triplets, with each poisoned triplet matched to a clean control at the same $(q, \mathrm{injection}, \rho)$ slot.
 
-For each poisoned triplet, the indices of replaced passages are recorded in a \texttt{poisoned\_passage\_indices} field, denoted $\mathcal{P} \subseteq \{1, \ldots, n\}$. This explicit per-passage labelling enables supervised pre-filter training and residual-aware analysis. The dataset fields are summarised in \hyperref[app:schema]{Appendix D}.
+For each poisoned triplet, the indices of replaced passages are recorded in a \texttt{poisoned\_\allowbreak passage\_\allowbreak indices} field, denoted $\mathcal{P} \subseteq \{1, \ldots, n\}$. This explicit per-passage labelling enables supervised pre-filter training and residual-aware analysis. The dataset fields are summarised in \hyperref[app:schema]{Appendix D}.
+
+We keep paired clean controls so each poisoned triplet can be compared against the same question without poisoning.
 
 \begin{figure}[H]
 \centering
@@ -73,7 +75,7 @@ The additive insertion ensures that for every poisoned PoisonedRAG-style triplet
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{images/PoisonedRAG-styleInjectionProcess.png}
-\caption{PoisonedRAG-style injection process, showing target wrong-answer generation, malicious passage synthesis, and additive insertion into the retrieved context.}
+\caption{PoisonedRAG-style poisoned-context construction process, showing target wrong-answer generation, malicious passage synthesis, and additive insertion into the fixed HotpotQA context. The construction preserves the original supporting passages and does not evaluate retrieval reranking or downstream answer generation.}
 \label{fig:methodology-poisonedrag-injection}
 \end{figure}
 
@@ -96,7 +98,7 @@ Test & 480 & 20\% \\
 \end{tabular}
 \end{table}
 
-The pre-filter classifier is trained on the train split, hyperparameters are selected on validation, and all classifier-level performance reported is evaluated on the held-out test split.
+The pre-filter classifier is trained on the train split, hyperparameters are selected on the validation split, and all classifier-level performance is reported on the held-out test split.
 
 Summary statistics for the full dataset:
 
@@ -131,7 +133,7 @@ For random noise, replacement passages are accepted only if their cosine similar
 
 For adversarial fact rewriting, each generated passage must satisfy three conditions: cosine similarity above $0.7$ with the original passage it replaces (to preserve retrievability), an automated consistency check confirming that the rewritten passage contradicts $a^{*}$, and an automated fluency check.
 
-For PoisonedRAG-style, two operational conditions are verified: (i) the \emph{retrieval condition}, that the malicious passage appears in the top-$k$ retrieved results when injected into the knowledge base; and (ii) the \emph{generation condition}, that an LLM produces $a^{\dagger}$ when the malicious passage is provided as the sole context for the question.
+For PoisonedRAG-style injections, quality assurance focuses on construction validity rather than a full retrieval-generation evaluation. We verify that each malicious passage is topically aligned with the question, supports the generated wrong target answer $a^{\dagger}$, and is inserted additively so that original supporting passages are preserved. We do not evaluate retrieval reranking or downstream answer generation in this thesis; the resulting poisoned contexts are used directly for judge-robustness evaluation.
 
 A final integrity check confirms that no duplicate triplet IDs exist across splits and that the per-cell counts are balanced across $(\mathrm{judge}, \mathrm{injection}, \rho)$ combinations.
 
@@ -140,7 +142,7 @@ A final integrity check confirms that no duplicate triplet IDs exist across spli
 
 \subsection{Judge selection}
 
-We evaluate three current LLM judges spanning different provider and deployment profiles. 
+We evaluate three current LLM judges spanning different provider and deployment profiles. We made the decision to diversify into different segments of current state-of-the-art models while keeping the experiment computationally tractable. GPT-5.4-nano represents the proprietary OpenAI judge in the panel. Hence, we used Gemma as a recent open-weight model from Google, and DeepSeek as a lower-cost model family with a different provider profile from OpenAI.
 
 \begin{table}[htbp]
 \centering
@@ -158,13 +160,13 @@ DeepSeek     & \texttt{deepseek-chat} (V3.2) & DeepSeek        \\
 \end{tabular}
 \end{table}
 
-The models are chosen to cover different provider types rather than to exhaust the model space. Detailed configuration values are recorded in \hyperref[app:config]{Appendix E}.
+The models are chosen to cover different provider types rather than to exhaust the model space. Detailed configuration values are recorded in \hyperref[app:config]{Appendix F}.
 
 \subsection{Scoring protocol}
 
 All three judges receive an identical scoring prompt. The prompt provides the question $q$, the retrieved context $C$ (passages separated by blank lines, truncated at 2{,}000 tokens), and the answer $a^{*}$. The judge is asked to return three scores (faithfulness, answer relevance, and context relevance), each a real number in $[0, 1]$, in JSON format. The judge is not informed whether the context is poisoned, mirroring a zero-knowledge deployment scenario. The exact scoring and justification prompts are provided in \hyperref[app:evaluation-prompts]{Appendix A}.
 
-We use the RAGAS conventions for the three metrics. \textbf{Faithfulness} measures whether the answer is supported by the provided context. \textbf{Answer relevance} measures whether the answer is on-topic for the question. \textbf{Context relevance} measures whether the retrieved context is relevant to the question. Faithfulness is the primary metric of interest because corpus poisoning compromises this dimension most directly.
+We adhere to the RAGAS conventions for the three metrics. \textbf{Faithfulness} measures whether the generated answer is supported by the provided context. \textbf{Answer relevance} measures whether the generated answer is relevant to the question. \textbf{Context relevance} measures whether the retrieved context is relevant to the question. Faithfulness is the primary metric of interest because it is the dimension that corpus poisoning compromises most directly.
 
 \subsection{Primary metric: Faithfulness FPR}
 
@@ -178,7 +180,7 @@ The \textbf{False Positive Rate (FPR)} of the judge is the fraction of poisoned 
 \mathrm{FPR} = \frac{1}{|T_{p}|} \sum_{t \in T_{p}} \mathbb{1}[f(t) \geq \tau]
 \end{equation}
 
-The threshold corresponds to the natural midpoint of the scoring interval and is the canonical operating point for binarising RAGAS scores. 
+The threshold corresponds to the natural midpoint of the scoring interval and is the conventional operating point for binarising RAGAS scores.
 
 \subsection{Secondary metrics}
 
@@ -203,27 +205,27 @@ All judge outputs are stored in a structured format that preserves triplet ident
 
 \subsection{Design criteria}
 
-Both pre-filter modules are designed against four criteria: (i) pipeline integration as a drop-in component without modifying the judge prompt, (ii) computational tractability, (iii) multi-signal redundancy for the statistical filter, and (iv) configurable sensitivity.
+Both pre-filter modules are designed against four specification points: (i) integration as a drop-in pipeline component without modifying the judge prompt, (ii) computational tractability, (iii) multi-signal redundancy for the statistical filter, and (iv) controllable sensitivity.
 
 \subsection{Statistical pre-filter: five signals}
 
-The statistical pre-filter is a passage-level binary classifier. For each retrieved passage $p_{i} \in C$, the filter computes five signals, aggregated into a per-passage poison probability $\hat{y}_{i} \in [0, 1]$. Full configuration values are listed in \hyperref[app:config]{Appendix E}.
+The statistical pre-filter is a passage-level binary classifier. For each retrieved passage $p_{i} \in C$, the filter computes five signals, aggregated into a per-passage poison probability $\hat{y}_{i} \in [0, 1]$. Full configuration values are listed in \hyperref[app:config]{Appendix F}.
 
-\textbf{Signal 1, embedding cosine anomaly.} This signal compares the passage embedding with the question embedding and flags unusually distant or unusually high-similarity passages.
+\textbf{Signal 1, embedding cosine anomaly.} This signal compares the passage embedding with the question embedding and flags unusually distant or unusually high-similarity passages. It was the first signal we thought of, a classical NLP-style signal which may be efficient for noisy or abnormal passage detection.
 
-\textbf{Signal 2, token-level entropy.} This signal uses language-model uncertainty to identify passages with unusual token-level probability patterns.
+\textbf{Signal 2, token-level entropy.} This signal uses language-model uncertainty to identify passages with unusual token-level probability patterns. We thought this might help because poisoned or generated passages may have different uncertainty patterns compared to normal retrieved text.
 
-\textbf{Signal 3, fine-tuned classifier.} A lightweight transformer model is fine-tuned as a binary classifier on the training split to output a direct poison probability. 
+\textbf{Signal 3, fine-tuned classifier.} A lightweight transformer model is fine-tuned as a binary classifier on the training split to output a direct poison probability. We included this signal to see whether a small supervised model could directly learn the poisoning patterns from labelled examples as we had access to labelled data.
 
-\textbf{Signal 4, answer span recall.} This signal measures whether a passage preserves tokens associated with the ground-truth answer.
+\textbf{Signal 4, answer span recall.} This signal measures whether a passage preserves tokens associated with the ground-truth answer. We believed that this signal would be informative, as an authentic supporting passage should maintain at least some link to the ground-truth answer, unlike a poisoned passage that might be intended to destroy or weaken it.
 
-\textbf{Signal 5, cross-encoder relevance.} This signal scores query-passage relevance using an interaction-based cross-encoder.
+\textbf{Signal 5, cross-encoder relevance.} This signal scores query-passage relevance using an interaction-based cross-encoder. We included this signal because poisoned passages can still look relevant to the question, so relevance alone may not be enough, but it could still add useful information when combined with the other signals.
 
 \subsection{Signal aggregation}
 
 The five signal scores form a feature vector $\mathbf{s}_{i} = (s_{1}, s_{2}, s_{3}, s_{4}, s_{5})$ per passage. We evaluate three aggregation methods on the validation split: weighted vote, XGBoost, and majority vote. 
 
-The most effective aggregator on the validation set is selected as the primary aggregator for end-to-end experiments, with Weighted Vote retained as an unbiased baseline for ablation analysis. 
+The best-performing aggregator on the validation set is used as the primary aggregator for end-to-end experiments, with Weighted Vote retained as an unbiased baseline for ablation analysis.
 
 \begin{figure}[H]
 \centering
@@ -234,15 +236,15 @@ The most effective aggregator on the validation set is selected as the primary a
 
 \subsection{Classifier backbone}
 
-For Signal~3, we compare two encoder backbones: DeBERTa-v3-small and RoBERTa-base. Both are fine-tuned on the same train split with matched hyperparameters, listed in \hyperref[app:config]{Appendix E}.
+For Signal~3, we compare two encoder backbones: DeBERTa-v3-small and RoBERTa-base. Both are fine-tuned on the same train split with matched hyperparameters, listed in \hyperref[app:config]{Appendix F}.
 
 \subsection{LLM pre-filter: triplet-level classification}
 
-The second pre-filter strategy uses Mistral-small-latest as an LLM classifier. This model sits outside the families of both the generation models and the judges, reducing in-family recognition confounds.
+The second pre-filter strategy employs Mistral-small-latest as the LLM classifier. This model is not part of either the poison-generation model family or the judge model families, reducing in-family recognition confounds. We used a different model family here to avoid the judge and filter coming from the same family.
 
 Because HotpotQA is a multi-hop task, evaluating passages in isolation is not appropriate: legitimate supporting passages may only become useful in combination with other passages. We therefore adopt a triplet-level strategy. The LLM receives $q$, $a^{*}$, and the full context $C$ in a single prompt, and it flags the indices of any passages it identifies as adversarial. 
 
-The output is a set of flagged indices $\hat{\mathcal{P}} \subseteq \{1, \ldots, n\}$. In deployment, a triplet for which $\hat{\mathcal{P}} \neq \emptyset$ is excluded from evaluation entirely, making this a \emph{content-preserving} filter, unlike the \emph{content-modifying} statistical filter. The two strategies operate at different abstraction levels and admit different failure modes, which is why we evaluate both.
+The output is a set of flagged indices $\hat{\mathcal{P}} \subseteq \{1, \ldots, n\}$. Flagged passages are removed from the context before the judge scores the triplet, producing a filtered context $C^{\prime} = C \setminus \{p_{i} : i \in \hat{\mathcal{P}}\}$. All triplets are scored regardless of whether any passages were flagged; the key distinction from the statistical filter is the signal source (holistic triplet-level reasoning by an LLM rather than per-passage signal aggregation) and the resulting removal rate (on average 1.2 passages removed per triplet, compared to 4.5 for the statistical filter). The two strategies use different detection signals and produce different residuals, which is why we evaluate both.
 
 \begin{figure}[H]
 \centering
@@ -255,7 +257,7 @@ The output is a set of flagged indices $\hat{\mathcal{P}} \subseteq \{1, \ldots,
 
 For the statistical filter, the output is a modified context $C^{\prime} = C \setminus \{p_{i} : \hat{y}_{i} \geq \tau\}$ that the judge then scores.
 
-For the LLM filter, the output is a triplet-level decision. We score the original context with the judge and compare verdicts on triplets the LLM filter flagged versus those it did not flag.
+For the LLM filter, the output is a set of flagged passage indices. Flagged passages are removed and the judge scores the resulting filtered context, identically to the statistical filter pipeline.
 
 \section{Phase 4: End-to-end evaluation}
 \label{sec:phase4}
@@ -311,8 +313,8 @@ Two ablation studies are conducted on saved validation-split outputs. The \textb
 \section{Implementation and statistical analysis}
 \label{sec:implementation}
 
-The evaluation pipeline is implemented in Python using version-controlled configuration files. The implementation records raw judge outputs, pre-filter outputs, and analysis exports in structured files so that tables and figures can be regenerated from saved artefacts. The final configuration is summarised in \hyperref[app:config]{Appendix E}, and the reproducibility workflow is summarised in \hyperref[app:reproducibility]{Appendix G}.
+The evaluation pipeline is implemented in Python using version-controlled configuration files. The implementation records raw judge outputs, pre-filter outputs, and analysis exports in structured files so that tables and figures can be regenerated from saved artefacts. The final configuration is summarised in \hyperref[app:config]{Appendix F}, and the reproducibility workflow is summarised in \hyperref[app:reproducibility]{Appendix G}.
 
 Paired comparisons between conditions use McNemar's test for binary outcomes and the Wilcoxon signed-rank test for continuous scores. Unpaired comparisons across triplet subsets use the Mann-Whitney $U$ test. 
 
-To account for inter-triplet dependencies stemming from the shared base questions, confidence intervals for classification metrics are computed via a question-clustered bootstrap resampling procedure (1{,}000 iterations). ROC curves are computed using scikit-learn's \texttt{roc\_curve} function, with the optimal operating point selected using the Youden index ($\mathrm{sensitivity} + \mathrm{specificity} - 1$).
+To account for inter-triplet dependencies stemming from the shared base questions, question-clustered bootstrap resampling is used for paired significance checks where base-question dependence matters (1{,}000 iterations). ROC curves are computed using scikit-learn's \texttt{roc\_curve} function, with the optimal operating point selected using the Youden index ($\mathrm{sensitivity} + \mathrm{specificity} - 1$).

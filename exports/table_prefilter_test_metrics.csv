@@ -1,5 +1,0 @@
-injection_type,n_test_passages,n_test_poisoned,n_test_clean,tp,fp,tn,fn,precision,recall,f1,clean_fpr
-adversarial_fact,1590,389,1201,316,15,1186,73,0.9547,0.8123,0.8778,0.0125
-poisonedrag_style,1934,374,1560,374,17,1543,0,0.9565,1.0,0.9778,0.0109
-random_noise,1595,392,1203,354,17,1186,38,0.9542,0.9031,0.9279,0.0141
-overall,5119,1155,3964,1044,49,3915,111,0.9552,0.9039,0.9288,0.0124

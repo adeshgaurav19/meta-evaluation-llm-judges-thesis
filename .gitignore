@@ -39,26 +39,31 @@ report/*.toc
 report/*.pdf
 report/verify_methodology_figures.pdf
 
-# Large/generated experiment artifacts
+# Large/generated experiment artifacts. Release only v2 result artefacts needed
+# for reproducibility: tables, JSON summaries/raw scores, and markdown notes.
+# Keep figures, JSONL checkpoints, logs, backups, and model binaries local.
 results/**
 !results/
-!results/tables/
-!results/tables/**
-!results/figures/
-!results/figures/**
-!results/benchmarks/
-!results/benchmarks/*.md
-!results/justifications/
-!results/justifications/*.md
 !results/v2/
+!results/v2/*.json
 !results/v2/tables/
 !results/v2/tables/**
-!results/v2/figures/
-!results/v2/figures/**
-!results/v2/benchmarks/
-!results/v2/benchmarks/*.md
 !results/v2/justifications/
+!results/v2/justifications/*.json
 !results/v2/justifications/*.md
+!results/v2/benchmarks/
+!results/v2/benchmarks/*.json
+!results/v2/benchmarks/*.md
+!results/v2/raw_scores/
+!results/v2/raw_scores/*.json
+!results/v2/prefilter_scores/
+!results/v2/prefilter_scores/*.json
+results/v2/*log*.json
+results/**/*.jsonl
+results/**/*.log
+results/**/figures/
+results/**/raw_scores_backup*/
+results/**/models/
 
 # Generated or source datasets that should be released separately or via LFS
 data/**
@@ -72,6 +77,24 @@ data/**
 exports/_archived_tables/
 exports/legacy_analysis/
 exports/title_lookup.json
+
+# Private working documents
+report/human_rewrite_from_methodology.md
+report/emlyon_logo.avif
+
+# Archived/exploratory scripts
+scripts/_archived/
+src/analysis/ablation.py
+src/analysis/correlation.py
+src/analysis/plots.py
+
+# Stale per-injection classifier tables (superseded by filter audit)
+exports/table_prefilter_test_metrics.csv
+results/v2/tables/table_4_5_signal_performance.csv
+results/v2/tables/table_4_6_aggregated_performance.csv
+results/v2/tables/table_ablation_aggregation.csv
+results/v2/tables/table_ablation_signal_removal.csv
+exports/figures/fig02b_mistral_filter_metrics.png
 kaggle_phase34/
 
 # Local AI/editor working notes that are not part of the release repo

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import json
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -8,6 +6,21 @@ from pathlib import Path
 from src.judges.batch_gemini import run_gemini_batch
 from src.judges.batch_openai import run_openai_batch
 from src.judges.prompts import JUSTIFICATION_PROMPT, SCORING_PROMPT
+
+
+def _load_checkpoint(checkpoint_path: Path, triplets: list, label: str) -> tuple[dict, list]:
+    results_map: dict[str, dict] = {}
+    if checkpoint_path.exists():
+        for line in checkpoint_path.read_text().strip().splitlines():
+            if line.strip():
+                r = json.loads(line)
+                results_map[r["id"]] = r
+        already_done = {tid for tid, r in results_map.items() if not r.get("error")}
+        triplets_to_run = [t for t in triplets if t.id not in already_done]
+        print(f"[{label}] Resuming  {len(already_done)} already done, {len(triplets_to_run)} remaining")
+    else:
+        triplets_to_run = triplets
+    return results_map, triplets_to_run
 
 
 def run_scoring_phase(
@@ -99,7 +112,7 @@ def _score_gemma_one(
                 "429" in err_str or "quota" in err_str.lower() or "rate" in err_str.lower()
             )
             if is_rate_limit and attempt < max_retries - 1:
-                time.sleep(2**attempt)  # 1s, 2s, 4s, 8s, 16s
+                time.sleep(2**attempt)
                 continue
             return {"id": t.id, "scores": None, "error": err_str, "latency_ms": 0}
     return {"id": t.id, "scores": None, "error": "max_retries_exceeded", "latency_ms": 0}
@@ -164,19 +177,7 @@ def run_scoring_realtime(
         out_dir_tmp = Path(config["experiment"]["results_dir"]) / "raw_scores"
         out_dir_tmp.mkdir(parents=True, exist_ok=True)
         checkpoint_path = out_dir_tmp / f"{phase_name}_gemini_checkpoint.jsonl"
-
-        if checkpoint_path.exists():
-            for line in checkpoint_path.read_text().strip().splitlines():
-                if line.strip():
-                    r = json.loads(line)
-                    gemini_results_map[r["id"]] = r
-            already_done = {tid for tid, r in gemini_results_map.items() if not r.get("error")}
-            triplets_to_run = [t for t in triplets if t.id not in already_done]
-            print(
-                f"[Gemma] Resuming  {len(already_done)} already done, {len(triplets_to_run)} remaining"
-            )
-        else:
-            triplets_to_run = triplets
+        gemini_results_map, triplets_to_run = _load_checkpoint(checkpoint_path, triplets, "Gemma")
 
         ckpt_file = open(checkpoint_path, "a")
         try:
@@ -277,22 +278,9 @@ def run_scoring_deepseek(
     out_dir.mkdir(parents=True, exist_ok=True)
     checkpoint_path = out_dir / f"{phase_name}_deepseek_checkpoint.jsonl"
 
-    results_map: dict[str, dict] = {}
-    if checkpoint_path.exists():
-        for line in checkpoint_path.read_text().strip().splitlines():
-            if line.strip():
-                r = json.loads(line)
-                results_map[r["id"]] = r
-        already_done = {tid for tid, r in results_map.items() if not r.get("error")}
-        triplets_to_run = [t for t in triplets if t.id not in already_done]
-        print(
-            f"[DeepSeek] Resuming  {len(already_done)} already done, {len(triplets_to_run)} remaining"
-        )
-    else:
-        triplets_to_run = triplets
-        print(
-            f"[DeepSeek] Scoring {len(triplets_to_run)} triplets with concurrency={concurrency} ..."
-        )
+    results_map, triplets_to_run = _load_checkpoint(checkpoint_path, triplets, "DeepSeek")
+    if not checkpoint_path.exists():
+        print(f"[DeepSeek] Scoring {len(triplets_to_run)} triplets with concurrency={concurrency} ...")
 
     ckpt_file = open(checkpoint_path, "a")
     try:

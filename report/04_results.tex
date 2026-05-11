@@ -1,14 +1,14 @@
 \chapter{Results}
 
-This chapter reports the empirical findings of the experimental programme. Section 4.1 characterises the three LLM judges at baseline, before any defence is applied. Section 4.2 reports the statistical pre-filter as a passage-level classifier. Section 4.3 reports the LLM pre-filter (Mistral) as a triplet-level classifier. Section 4.4 is the central section of the chapter: it measures how each pre-filter affects judge reliability end-to-end, using a labelling convention that reflects what the judge actually sees after filtering. Section 4.5 audits what each filter did at the passage level and surfaces a collateral-damage finding that explains part of the end-to-end behaviour. Section 4.6 reports the justification analysis. Section 4.7 reports the multi-judge disagreement analysis. Section 4.8 summarises.
+This chapter reports the experimental findings. Section 4.1 characterises the three LLM judges in the baseline, prior to any defence. Section 4.2 reports the statistical pre-filter as a passage-level classifier. Section 4.3 reports the LLM pre-filter (Mistral) as a triplet-level classifier. Section 4.4 is the core section of the chapter: how does the addition of each pre-filter impact judged reliability end-to-end, with a labelling convention that captures the true judge input? Section 4.5 audits the individual filter actions on passages, and brings out a side-effect finding that explains part of the end-to-end behaviour. Section 4.6 presents the justification analysis. Section 4.7 discusses the multi-judge disagreement analysis. Section 4.8 summarises.
 
 \section{Baseline Judge Characterisation}
 
-We score the full Poisoned Evaluation Dataset with each of the three judges (GPT-5.4-nano, Gemma-4-26B-A4B-IT, DeepSeek-V3.2) without any filter applied. The results establish how vulnerable each judge is to corpus poisoning before any defence is in place, and they surface qualitatively different scoring behaviours that shape every analysis that follows.
+The three judges (GPT-5.4-nano, Gemma-4-26B-A4B-IT, DeepSeek-V3.2) are then employed to score the entire Poisoned Evaluation Dataset, without any filtering applied, providing baseline level of corpus poisoning vulnerability for each judge and identifying three distinct qualitatively different ways of scoring that form the foundation of subsequent reasoning.
 
 \subsection{Cross-judge baseline failure rates}
 
-A note on terminology before the numbers. Throughout this chapter, two related but distinct quantities are reported: the False Positive Rate (the fraction of poisoned triplets the judge scores at or above 0.5) and the mean RAGAS score on a particular subset. Higher values of either quantity, when computed on a poisoned subset, indicate judge failure rather than judge success - the judge is assigning faithful or relevant labels to context that is by construction corrupted. This convention applies uniformly across the faithfulness, context relevance, and answer relevance dimensions.
+One final word on notation, before the numbers. We use two similar yet separate quantities: the False Positive Rate (fraction of poisoned triplets assigned 0.5 or higher by the judge) and the average RAGAS score over a specific subset. A larger number for either, when on a poisoned subset, shows judge failure, not judge success; the judge is providing an honest label over content that we constructed to be fraudulent. This convention holds for the aspects of faithfulness and context relevance. We didn't touch the answer so answer relevance is unaffected.
 
 Baseline False Positive Rates differ substantially across judges. Table~\ref{tab:baseline-fpr} reports FPR on the originally-poisoned subset for all three RAGAS dimensions.
 
@@ -30,9 +30,9 @@ DeepSeek-V3.2 & 0.412 & 0.326 & 0.652 \\
 \label{tab:baseline-fpr}
 \end{table}
 
-The headline numbers tell three different stories. DeepSeek is the strictest of the three on faithfulness and context relevance; it scores roughly 41\% of poisoned triplets as faithful and 33\% as having relevant context. Gemma is the most lenient by a wide margin, scoring more than 86\% of poisoned triplets as having relevant context. GPT sits in the middle on faithfulness but produces a high context relevance FPR (0.720).
+Three very different pictures emerge from the raw figures. DeepSeek is the strictest by far for faithfulness and context relevance: about 41\% and 33\% of poisoned triplets are still scored as faithful and context-relevant, respectively. Gemma is the most lax by a wide margin (over 86\% for relevance). GPT is the mid-way point for faithfulness but gives a high context relevance FPR (0.720).
 
-Answer relevance FPR is the highest of the three RAGAS dimensions for every judge. This is structural rather than a sign of judge failure: the answer in our triplets is the HotpotQA ground-truth answer, which is genuinely relevant to the question regardless of what the context contains. We retain answer relevance throughout the analysis as a methodological control. It shows what a judge's behaviour looks like on a metric that is in principle insensitive to context corruption, and it provides a reference point against which faithfulness and context relevance behaviour can be compared.
+Across all three RAGAS dimensions, for all judges, answer relevance FPR is highest. This is structural and not evidence of judge failure: since the answer in our triplets is the HotpotQA ground truth, it's relevant to the question independently of the context. We keep the answer relevance measure constant across the entire experiment as a sanity check. It demonstrates what a judge will look like when observing this relatively context-blind metric, giving us a baseline against which to compare behaviour on faithfulness and context relevance.
 
 \subsection{Three calibration regimes}
 
@@ -45,13 +45,13 @@ The three judges occupy distinct calibration regimes that emerge from their scor
 \label{fig:baseline-calibration}
 \end{figure}
 
-GPT produces a continuous distribution. Scores spread across the full [0, 1] interval, with 30.3\% landing in the middle range (0.1 to 0.9 exclusive), 21.5\% at or below 0.1, and 48.2\% at or above 0.9. The judge expresses graded confidence and a threshold of 0.5 is one of many reasonable choices for binarising its output. The behaviour around the threshold is not bimodal, though the distribution leans toward high scores.
+GPT outputs constitute a continuous distribution; scores are scattered over the whole $[0, 1]$ interval. Only about 30.3\% of the outputs lie in the middle-range $[0.1, 0.9)$ and the respective numbers are 21.5\% for outputs $\leq 0.1$ and 48.2\% for outputs $\geq 0.9$. They represent graded confidences and the threshold 0.5 is one possibility for binarising the judge output. The distribution around the threshold does not appear to be bimodal, although scores skew toward high values.
 
-Gemma exhibits extreme leniency. About 77.1\% of faithfulness scores fall at 0.9 or above, and only 10.7\% land in the middle range. The judge defaults to high faithfulness scores and reserves low scores for the most extreme cases. This is the source of Gemma's high baseline FPR: when the default verdict is "faithful", poisoning has to be glaring to overcome that prior.
+Gemma is highly permissive; it assigns 0.9 and above in 77.1\% of faithfulness values and only 10.7\% lie in the $[0.1, 0.9)$ range. It also tends toward high faithfulness scores, assigning low ones only in visually poor quality outputs. This is the reason behind Gemma's high baseline FPR: it favours a default of faithfulness, which makes a poisoning attack have to be particularly salient to justify a departure.
 
-DeepSeek is near-binary. About 99.4\% of scores cluster at the extremes (≤0.1 or ≥0.9), with only 0.6\% in the middle range. The judge effectively makes a binary decision and reports it as a near-extreme number. The threshold of 0.5 is essentially a formality for this judge; the meaningful question is which of the two attractors a given triplet falls into.
+DeepSeek is near-binary; it has almost no scores in $[0.1, 0.9)$, giving 0.6\% only. 99.4\% are located in the extreme ends of the spectrum. The judge seems to be outputting a near-extreme number for whatever binary verdict it takes. Though the threshold remains 0.5, the question of importance is rather into which of the two attractors a triplet is classified.
 
-These calibration regimes matter for two reasons that recur through the chapter. First, they constrain which mitigation strategies are even applicable. A continuous-scoring judge supports confidence-abstention strategies because there is a meaningful uncertainty band to abstain on. A near-binary judge does not. Second, the calibration regimes interact non-trivially with attack type, as the next subsection shows.
+These calibration regimes matter for two reasons that recur through the chapter. First, they constrain which mitigation strategies are applicable. A continuous-scoring judge supports confidence-abstention strategies because there is a meaningful uncertainty band to abstain on, while a near-binary judge does not. Second, these calibration regimes interact non-trivially with attack type, as the next subsection shows.
 
 A note on terminology: throughout this chapter we use "calibration regime" specifically to refer to the \textit{shape} of the score distribution (continuous, near-binary, extreme-leniency). This is a structural property of how a judge maps internal confidence to a [0, 1] output. It is distinct from the stronger sense of "calibration" used in probabilistic forecasting, where a well-calibrated predictor's confidence values match empirical accuracy on held-out data. Validating the three judges' calibration in that stronger sense would require a human-annotated ground truth, which we do not have for this dataset; we treat that as a limitation in Section 5.5.
 
@@ -74,29 +74,29 @@ DeepSeek-V3.2 & 0.465 & 0.398 & 0.375 \\
 \label{tab:baseline-fpr-injection}
 \end{table}
 
-The cross-judge ordering reverses on PoisonedRAG-style. For GPT and Gemma, PoisonedRAG-style is the hardest of the three injection types to detect; their FPRs climb to 0.615 and 0.907 respectively. For DeepSeek, PoisonedRAG-style is the easiest of the three, with FPR dropping to 0.375. Gemma's FPR on PoisonedRAG-style is more than double DeepSeek's on the same attack class.
+The cross-judge ordering reverses on the PoisonedRAG-style attack. For GPT and Gemma, it is the hardest of the three injection types to detect; their FPRs climb to 0.615 and 0.907 respectively. For DeepSeek, it is the easiest of the three, with FPR dropping to 0.375. Gemma's FPR on this attack class is more than double DeepSeek's.
 
-The reversal is striking and worth interpreting carefully. PoisonedRAG-style is the most adversarial of the three classes by construction. The retrieval sub-text guarantees the malicious passage will be retrieved, and the generation sub-text is engineered to support a target wrong answer that contradicts the ground-truth answer. The fact that GPT and Gemma find this hardest reflects what the attack is designed to do: produce content that looks topically coherent and factually plausible while steering toward the wrong answer.
+The switch is interesting and we must give it meaning. By construction, PoisonedRAG-style is the most adversarial class of the three; we intend for the poison passage to be retrievable, topically relevant, and factually sensible, and for it to point to a target answer that is inconsistent with the ground truth answer. Both GPT and Gemma appear to fall victim to these aspects, which is the design of the attack.
 
-DeepSeek's response is different in kind, and the cleanest interpretation we can offer connects this to its calibration regime. The near-binary scoring style means DeepSeek is not weighing graded evidence; it is making a categorical judgement. PoisonedRAG-style triplets contain an internal contradiction (the malicious passage supports an answer that contradicts the ground-truth answer in the triplet's answer slot), and DeepSeek's scoring style picks up on that contradiction reliably while the continuous-scoring judges weight the topical fluency of the malicious passage more heavily than the contradiction. We offer this as the most plausible mechanism consistent with our data; we cannot rule out alternative explanations such as DeepSeek's training distribution containing more contradiction-detection examples or its system-prompt sensitivity differing from the others. The directional reversal is robust; the mechanism behind it is partially speculative.
+The nature of the difference with DeepSeek is different again. The most plausible hypothesis is the judge's near binary scoring: DeepSeek does not seem to assign partial credit to gradations in the evidence in the way that the other judges do but is more ``black and white''. The internal contradiction that is between the target answer and the ground truth answer seems to be reliably used by the judge's scoring system. It's certainly possible that it's due to something else, such as that DeepSeek has seen more contradiction detection examples, or is more sensitive to the prompt, but the quality of the distinction is undeniable among our three-model panel.
 
-Within our three-judge panel, scoring strategy appears to matter at least as much as judge size or training compute for robustness to corpus poisoning. The three judges respond differently to the most sophisticated attack class, and the differences within our panel are not explained by raw model capacity or simple bias correction. Whether the same observation holds across a larger panel - particularly one that includes reasoning models or frontier-tier judges - is an empirical question we cannot answer with three judges; we treat the claim as suggested by our data, not established by it.
+Among this panel, the role of the strategy of scoring the questions seems to be at least as important as either model size or compute in its contribution to its resilience to corpus poisoning. Our panel exhibits varying degrees of sensitivity to our most advanced type of attack, and these variations don't stem from model capacity or simple bias correction. Whether the same statement is true for a larger panel, particularly for reasoning models or frontier models is an empirical question which we cannot address using only three judges and should be regarded as proposed by our data, rather than proved.
 
 \subsection{Noise level sensitivity}
 
 Within each injection type, FPR varies with noise level (the proportion of context passages replaced). The pattern is broadly monotonic: higher noise levels are easier to detect for all three judges. At noise level 0.2, GPT's faithfulness FPR is 0.700; at noise level 0.8 it falls to 0.423. Gemma's drops from 0.850 to 0.555 across the same range. DeepSeek's falls most steeply, from 0.597 to 0.233.
 
-The direction matches intuition. When more of the context is corrupted, the corruption becomes harder to ignore. The implication for the security narrative is mixed. Low-noise attacks (where most of the context is still legitimate) are the harder threat because the judges are more vulnerable to them. The structural failure cases that drive the highest FPRs (PoisonedRAG-style on GPT and Gemma) are not strongly noise-dependent; subtle attacks succeed at high baseline rates regardless of how much surrounding noise is present.
+The intuition seems right: the more noise injected into the context, the easier that noise is to spot. This suggests a negative spin for the security story: high noise attacks that involve poisoning the majority of the context are less interesting to attacker and less relevant to defenders, because they can be easily detected. The structure failure instances that are the source of the highest FPRs, PoisonedRAG-style on both GPT and Gemma, were not particularly noise-sensitive; mild attacks can obtain high base rate FPR without adding much surrounding noise.
 
 The noise-level pattern reverses partially after filtering, which we examine in Section 4.4.
 
 \section{Statistical Pre-filter as a Classifier}
 
-Section 4.1 established that judges are vulnerable. We now turn to the first proposed mitigation: a multi-signal statistical pre-filter that scores each retrieved passage and removes those flagged as poisoned. The filter is evaluated as a binary passage-level classifier on the held-out test split of the Poisoned Evaluation Dataset.
+Section 4.1 established that judges are vulnerable. We now turn to the first proposed mitigation: a multi-signal statistical pre-filter that scores each retrieved passage and removes those flagged as poisoned. We analyse this filter as a binary passage-level classifier on the held-out test split of the Poisoned Evaluation Dataset.
 
 \subsection{Headline performance}
 
-The filter performs well. On 5,119 test-split passages (1,155 poisoned, 3,964 clean), it achieves precision 0.955, recall 0.904, and F1 of 0.929. The clean false-positive rate is 0.012 - clean passages are essentially never wrongly flagged.
+The filter performs well. On 5,119 test-split passages (1,155 poisoned, 3,964 clean), it achieves precision 0.955, recall 0.904, and F1 of 0.929. The clean false-positive rate is 0.012: clean passages are essentially never wrongly flagged.
 
 \begin{table}[H]
 \centering
@@ -114,47 +114,23 @@ Clean false-positive rate & 0.012 \\
 \label{tab:stat-filter-performance}
 \end{table}
 
-These are strong numbers in absolute terms. The filter is highly precise: when it flags a passage as poisoned, it is right about 95.5\% of the time. The clean-FPR of 0.012 is operationally meaningful - clean passages are essentially never wrongly removed, which means the filter does not aggressively reject legitimate retrieved content.
+These are strong numbers in absolute terms. The filter is highly precise: when it flags a passage as poisoned, it is right about 95.5\% of the time. The clean-FPR of 0.012 is operationally meaningful: the filter almost never falsely rejects clean retrieved text, which means it does not aggressively remove legitimate content.
 
-\subsection{Recall by attack type}
-
-The filter's behaviour varies by injection type. Table~\ref{tab:stat-filter-by-injection} reports per-attack-type performance on the test split.
-
-\begin{table}[H]
-\centering
-\small
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lllllll}
-\toprule
-Injection type & n test passages & n poisoned & Precision & Recall & F1 & Clean FPR \\
-\midrule
-Random noise & 1,595 & 392 & 0.954 & 0.903 & 0.928 & 0.014 \\
-Adversarial fact & 1,590 & 389 & 0.955 & 0.812 & 0.878 & 0.013 \\
-PoisonedRAG-style & 1,934 & 374 & 0.957 & 1.000 & 0.978 & 0.011 \\
-\bottomrule
-\end{tabular}
-}
-\caption{Statistical filter classifier performance per injection type, test split.}
-\label{tab:stat-filter-by-injection}
-\end{table}
-
-The filter performs well across all three attack types. Recall is highest on the most adversarial class (PoisonedRAG-style at 1.000) and lowest on the middle class (adversarial fact at 0.812). The PoisonedRAG-style result is striking: the filter catches every poisoned PoisonedRAG passage in the test set. The combined signal set evidently captures structural artefacts of the attack reliably; identifying which individual signals carry the most weight in this regime is examined in Section 4.2.3 below.
-
-The adversarial fact class is the hardest because the manipulation is at the factual level, not at the surface or structural level. The injected passage is fluent, topically aligned with the question, and embedding-similar to the original passage it replaces. The filter must rely on the DeBERTa classifier (Signal 3) and answer span recall (Signal 4) to catch these cases, and not all of them carry strong enough signal for the classifier to flag.
+Per-attack-type behaviour is therefore reported through the end-to-end filter audit in Section~\ref{sec:filter-audit}, which records what the filter actually removes from the final contexts.
 
 \subsection{Per-signal contribution and classifier backbone}
 
 A per-signal ablation removes one signal at a time and recomputes pipeline F1. The DeBERTa classifier (Signal 3) is the largest single contributor: removing it drops F1 by approximately 0.030. The cross-encoder (Signal 5) contributes roughly 0.029 and answer span recall (Signal 4) contributes roughly 0.018. The embedding cosine and entropy signals contribute negligibly to aggregate F1 in this ablation; removing either changes overall F1 by less than 0.001.
 
-The per-injection ablation breakdown (Appendix D) shows that the per-signal contributions vary somewhat by attack type but no single signal dominates PoisonedRAG-style detection in isolation. The combined signal set, taken together, achieves the high test-split PoisonedRAG-style recall reported in Table~\ref{tab:stat-filter-by-injection} - but the ablation does not identify a single removable signal whose absence collapses that recall. The headline interpretation is that the multi-signal aggregation is genuinely doing aggregate work; the filter is not reducible to any one of its inputs.
+The per-injection ablation breakdown (\hyperref[app:additional-results]{Appendix E}) shows that the per-signal contributions vary somewhat by attack type but no single signal dominates any one attack class in isolation. The held-out test performance of the full statistical filter is reported in Table~\ref{tab:stat-filter-performance}; Appendix~E reports a separate reduced validation ablation protocol used to estimate the relative contribution of each signal. The headline interpretation is that the multi-signal aggregation is genuinely doing aggregate work; the filter is not reducible to any one of its inputs.
 
-The classifier backbone comparison (DeBERTa-v3-small vs RoBERTa-base, both fine-tuned on the same training split with matched hyperparameters) shows the two architectures essentially tied at validation F1 of 0.7215 and 0.7202. Either backbone produces a usable filter; the choice between them is not load-bearing for the headline results. Detailed ablation tables are reported in Appendix D.
+The classifier backbone comparison (DeBERTa-v3-small vs RoBERTa-base, both fine-tuned on the same training split with matched hyperparameters) shows the two architectures essentially tied at validation F1 of 0.7215 and 0.7202. Either backbone produces a usable filter; the choice between them is not load-bearing for the headline results. Detailed ablation tables are reported in \hyperref[app:additional-results]{Appendix E}.
 
-The headline of Section 4.2 is straightforward: the statistical filter is a strong classifier, with high precision (0.955) and high recall (0.904) on the held-out test set. Three of its five signals (DeBERTa, cross-encoder, answer span recall) carry the discriminative weight in aggregate F1. The filter performs particularly well on PoisonedRAG-style attacks at the test-set operating point.
+The headline of Section 4.2 is straightforward: the statistical filter is a strong classifier, with high precision (0.955) and high recall (0.904) on the held-out test set. Three of its five signals (DeBERTa, cross-encoder, answer span recall) carry the discriminative weight in aggregate F1.
 
 \section{LLM Pre-filter (Mistral) as a Classifier}
 
-The second pre-filter strategy uses \texttt{mistral-small-latest} as a triplet-level classifier. Section 3.4.5 set out the rationale: a triplet-level operating mode (the filter sees all retrieved passages at once and gives a single verdict) and a deliberate cross-architecture choice (Mistral is outside both the poison-generation family and all three judge families).
+The second pre-filter strategy uses \texttt{mistral-small-latest} as a triplet-level classifier. Section~\ref{sec:phase3} set out the rationale: a triplet-level operating mode (the filter sees all retrieved passages at once and gives a single verdict) and a deliberate cross-architecture choice (Mistral is outside both the poison-generation family and all three judge families).
 
 \subsection{Headline performance}
 
@@ -175,7 +151,7 @@ Clean false-positive rate & 0.174 \\
 \label{tab:mistral-filter-performance}
 \end{table}
 
-Mistral catches just over half of the poisoned triplets, with a clean-FPR of 0.174 - about one in six clean triplets is wrongly flagged. The trade-off relative to the statistical filter is sharp: lower recall (0.505 vs 0.904), substantially higher clean-FPR (0.174 vs 0.012), at a coarser granularity (whole-triplet rejection rather than per-passage removal).
+Mistral catches just over half of the poisoned triplets, with a clean-FPR of 0.174: about one in six clean triplets is wrongly flagged. The trade-off relative to the statistical filter is sharp: lower recall (0.505 vs 0.904), substantially higher clean-FPR (0.174 vs 0.012), and a lower average passage-removal rate (1.2 passages per triplet versus 4.5 for the statistical filter).
 
 \subsection{Strong asymmetry by attack type}
 
@@ -199,19 +175,19 @@ PoisonedRAG-style & 400 & 400 & 0.823 & 0.765 & 0.793 & 0.165 \\
 \label{tab:mistral-filter-by-injection}
 \end{table}
 
-Mistral catches 76.5\% of PoisonedRAG-style triplets but only 14.0\% of random-noise triplets. The recall asymmetry is more than five-to-one. This is the exact opposite profile from the statistical filter, which has its strongest recall on PoisonedRAG-style (1.000) and weakest on adversarial fact (0.812).
+Mistral catches 76.5\% of PoisonedRAG-style triplets but only 14.0\% of random-noise triplets. The recall asymmetry is more than five-to-one. This contrasts with the statistical filter's end-to-end audit profile in Section~\ref{sec:filter-audit}, where recall is roughly 0.55 on the two replacement-based attacks (0.554 random noise, 0.551 adversarial fact) and lower on PoisonedRAG-style (0.296).
 
-The two filters detect partially complementary phenomena. The statistical filter exploits structural artefacts of the attacks (retrieval-optimised embeddings, classifier-detectable text patterns, missing answer tokens). Mistral judges the triplet as a whole and reasons about cross-passage consistency. PoisonedRAG-style attacks are easy for Mistral because the malicious passage explicitly contradicts the supporting passages in a way that a cross-passage reading can detect. Random-noise attacks are hard for Mistral because the noise passages are irrelevant rather than contradictory; they do not produce the kind of internal inconsistency Mistral can flag from a holistic reading.
+The two filters appear to pick up on complementary phenomena. The statistical filter leverages the structural artefact of attacks (retrieval-optimised embeddings, classifier-detectable text features, lack of answer token). Mistral evaluates the entire triplet, using its understanding of inter-passage consistency. PoisonedRAG-like attacks are easier for Mistral since the harmful passage clearly contradicts other supporting passages and can be detected by the model's inter-passage reading. Random-noise attacks are harder for Mistral since they add irrelevant information rather than contradiction, which is less detectable through Mistral's internal consistency check during a global reading.
 
-The complementarity has implications for hybrid filter design that we return to in Section 5.4.
+This complementary behaviour carries implications for the design of hybrid filters which we will revisit in Section 5.4.
 
 \section{End-to-End Effect of Filtering on Judge Reliability}
 
-This is the central section of the chapter. Sections 4.2 and 4.3 measured each filter as a classifier in isolation. The question that matters for production deployment is different: when a filter sits between the retriever and the judge, does the judge become more reliable? The answer is more nuanced than the standalone classifier metrics suggest, and reaching it requires care about what we are measuring.
+This is the core part of the chapter. In 4.2 and 4.3, we tested each filter independently as a classifier. We care about a different question for production: when a filter acts between a retriever and a judge, does the judge get more confident? It is more complex than we got from classifying the filter alone and must be considered with caution for the measurement.
 
 \subsection{Defining what "post-filter FPR" should measure}
 
-The naive post-filter FPR computation takes every triplet that was originally poisoned and asks how often the judge scores it as faithful after filtering. This computation has a conceptual problem. The statistical filter modifies content. After it runs, a triplet that was originally poisoned may have only had distractor passages perturbed (the supporting passages survived the attack) or may have had supporting passages overwritten (the supporting passages were killed). The two cases look very different to the judge, and aggregating them under a single "originally poisoned" label hides what is actually happening.
+The naive post-filter FPR calculation iterates over all originally-poisoned triplets and asks what proportion of them end up judged as faithful after filtering. This naive computation hides a fundamental flaw: since the statistical filter can (and will) alter passages, the set of triplets that were originally poisoned can either have only the distractor passages altered (i.e., the supporting passages survive) or it can have the supporting passages entirely overwritten (i.e., the supporting passages have been ``killed''). These two cases have different appearances to the judge and are aggregated together here under the same umbrella.
 
 We therefore decompose the originally-poisoned subset into two categories using the explicit per-passage poisoning indices recorded at construction time:
 
@@ -261,9 +237,9 @@ DeepSeek & postfilter\_llm & - & 0.721 (624) & 0.366 (576) & \textbf{+0.053} \\
 \label{fig:paradox-headline}
 \end{figure}
 
-The True column under postfilter is higher than the True column under baseline for all three judges. Filtering raises the rate at which judges score concentrated-poison contexts as faithful. The DeepSeek result is the most pronounced: baseline True mean of 0.314 jumps to 0.465 under the statistical filter - a 0.151 increase. GPT moves from 0.391 to 0.444, Gemma from 0.442 to 0.514. The statistical filter makes the worst case worse for every judge, with DeepSeek's effect roughly twice the magnitude of GPT's and Gemma's. The aggregate True-mean reported here averages over Type 1 (random noise) and Type 2 (adversarial fact rewriting) triplets, which contribute roughly equal counts but produce noticeably different per-injection effect sizes - for DeepSeek, +0.119 on random noise and +0.183 on adversarial fact, a 50\% relative difference. Section 4.4.4 reports the per-injection breakdown in detail.
+The True column under postfilter is higher than the True column under baseline for all three judges. Filtering raises the rate at which judges score concentrated-poison contexts as faithful. The DeepSeek result is the most pronounced: baseline True mean of 0.314 jumps to 0.465 under the statistical filter---a 0.151 increase. GPT moves from 0.391 to 0.444, Gemma from 0.442 to 0.514. The statistical filter makes the worst case worse for every judge, with DeepSeek's effect roughly twice the magnitude of GPT's and Gemma's. The aggregate True-mean reported here averages over Type 1 (random noise) and Type 2 (adversarial fact rewriting) triplets, which contribute roughly equal counts but produce noticeably different per-injection effect sizes---for DeepSeek, +0.119 on random noise and +0.183 on adversarial fact, a 50\% relative difference. Section 4.4.4 reports the per-injection breakdown in detail.
 
-The LLM filter (Mistral) shows a weaker and uneven pattern. DeepSeek's True mean rises by 0.053 under postfilter\_llm. GPT's drops by 0.017 and Gemma's drops by 0.022. The LLM filter does not modify content (Mistral classifies whole triplets rather than removing passages), so on True-category triplets - where the malicious passages have already overwritten supporting content - the filter has no opportunity to make the residual easier or harder for the judge. The DeepSeek effect is the only material True-mean change under the LLM filter.
+The LLM filter (Mistral) shows a weaker and uneven pattern. DeepSeek's True mean rises by 0.053 under postfilter\_llm. GPT's drops by 0.017 and Gemma's drops by 0.022. The LLM filter removes fewer passages per triplet on average (1.2 versus 4.5 for the statistical filter), so the context-clarification effect is more muted. The DeepSeek effect is the only material True-mean change under the LLM filter.
 
 The Survived column tells a more pronounced story. Survived means rise substantially under the statistical filter for GPT (0.638 → 0.685, Δ +0.047) and DeepSeek (0.494 → 0.720, Δ +0.226), and rise further under the LLM filter for both (GPT to 0.737, DeepSeek to 0.721). For Gemma the statistical filter reduces Survived by 0.061 (0.912 → 0.851), the only Survived cell where filtering visibly hurts. The Gemma decrease is consistent with its extreme-leniency calibration: Gemma's baseline Survived score is already near the ceiling, and the filter's collateral removal of supporting passages can only pull it down.
 
@@ -289,21 +265,21 @@ The paradox's strength varies across metric: substantial on faithfulness and con
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{../exports/figures/fig04a_per_injection_faithfulness.png}
-\caption{True-category faithfulness by judge, injection type, and filtering condition.}
+\caption{True-category faithfulness by judge, injection type, and filtering condition for replacement-based attacks. PoisonedRAG-style is excluded because additive attacks never overwrite supporting passages and therefore have no True-category cases.}
 \label{fig:per-injection-faithfulness}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{../exports/figures/fig04b_per_injection_context.png}
-\caption{True-category context relevance by judge, injection type, and filtering condition.}
+\caption{True-category context relevance by judge, injection type, and filtering condition for replacement-based attacks. PoisonedRAG-style is excluded because additive attacks never overwrite supporting passages and therefore have no True-category cases.}
 \label{fig:per-injection-context}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{../exports/figures/fig04c_per_injection_answer.png}
-\caption{True-category answer relevance by judge, injection type, and filtering condition.}
+\caption{True-category answer relevance by judge, injection type, and filtering condition for replacement-based attacks. PoisonedRAG-style is excluded because additive attacks never overwrite supporting passages and therefore have no True-category cases.}
 \label{fig:per-injection-answer}
 \end{figure}
 
@@ -360,7 +336,7 @@ DeepSeek & postfilter\_llm & 15.57 & [2.70, 18.27] & 0.089 \\
 \label{fig:mcnemar}
 \end{figure}
 
-After clustered correction, GPT and Gemma's True-subset shifts under the statistical filter are no longer significant at conventional thresholds; their bootstrap CIs include zero. DeepSeek's True-subset effect is borderline (p = 0.099). The Survived-subset effects tell a different story - the DeepSeek Survived shift, which traces almost entirely to PoisonedRAG-style triplets, remains robustly significant under clustered bootstrap (χ² = 77.7, bootstrap CI [29.6, 73.4], corrected p = 0.012 under the statistical filter; corrected p < 0.001 under the LLM filter). The largest single end-to-end effect in the analysis is also the most statistically robust.
+After clustered correction, GPT and Gemma's True-subset shifts under the statistical filter are no longer significant at conventional thresholds; their bootstrap CIs include zero. DeepSeek's True-subset effect is borderline (p = 0.099). The Survived-subset effects tell a different story---the DeepSeek Survived shift, which traces almost entirely to PoisonedRAG-style triplets, remains robustly significant under clustered bootstrap (uncorrected χ² = 77.7, bootstrap χ² interval [29.6, 73.4], corrected p = 0.012 under the statistical filter; corrected p < 0.001 under the LLM filter). The largest single end-to-end effect in the analysis is also the most statistically robust.
 
 The implication is that the True-subset paradox is directional and visible across all three judges but is not, with the data we have, decisively significant for GPT or Gemma once question-level clustering is accounted for. The Survived-subset effect on PoisonedRAG-style triplets is robust under any reasonable correction. The thesis's central claim - that filtering reshapes judge response in counterintuitive ways - is best supported by the Survived-subset result on the most adversarial attack class, not by the True-subset shifts on Types 1 and 2 alone.
 
@@ -386,6 +362,7 @@ The implication for deployment is uncomfortable. Subtle, low-noise attacks are e
 The end-to-end results in Section 4.4 raise a mechanism question. Why does the filter, which is a strong classifier (F1 = 0.929 on the test set), make judge behaviour worse on the True subset? Section 4.5 audits what the filter actually did at the passage level and surfaces a finding that explains part of the answer.
 
 \subsection{What the statistical filter removed}
+\label{sec:filter-audit}
 
 For each originally-poisoned triplet, we record three counts after the statistical filter runs: how many poisoned passages were correctly removed, how many were missed, and how many \textit{originally-supporting} passages were removed (collateral damage).
 
@@ -412,13 +389,13 @@ PoisonedRAG-style & 4.98 & 1.48 & 3.50 & 0.39 & 0.296 \\
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{../exports/figures/fig08_filter_audit.png}
-\caption{Passage-level filter audit by injection type, including correctly caught poison, missed poison, and collateral removal of supporting passages.}
+\caption{Statistical-filter passage-level audit by injection type, including correctly caught poison, missed poison, collateral removal of supporting passages, and original distractor removal.}
 \label{fig:filter-audit}
 \end{figure}
 
 Two observations from this table.
 
-First, the per-triplet recall (mean caught divided by mean poisoned) is substantially below the test-set recall reported in Section 4.2. The test-set numbers are computed on a held-out evaluation split where the classifier operates at its trained operating point. The whole-dataset audit, which includes triplets the classifier saw during training and validation, shows a more conservative effective recall - the headline 0.929 F1 reflects classifier performance, not the rate at which poison is fully eliminated from a random triplet.
+First, the per-triplet recall (mean caught divided by mean poisoned) is substantially below the test-set recall reported in Section 4.2. The classification metrics in Section 4.2 and the per-triplet audit recall measure related but distinct quantities: the former summarises aggregate passage-level discrimination from the saved classifier outputs, while the latter tracks how many corrected poisoned passages per triplet are actually removed from the final context end-to-end. The headline F1 of 0.929 reflects aggregate classifier discrimination; the audit recall is the operationally relevant figure for interpreting the end-to-end judge results.
 
 Second, and more importantly, the filter removes about 0.32 to 0.39 originally-supporting passages per triplet (averaging across the full Poisoned Evaluation Dataset). Each triplet has only two supporting passages by HotpotQA construction, so a loss of 0.35 corresponds to roughly 17.5\% of supporting passages being removed as collateral damage. This is not a small effect.
 
@@ -489,9 +466,9 @@ These results require us to revise the mechanism story given in Section 4.4. The
 
 \subsection{LLM filter audit}
 
-The LLM filter (Mistral) does not modify passages, so the collateral-damage analysis does not apply in the same form. Mistral classifies each triplet as poisoned or not, and in deployment a flagged triplet would be excluded entirely. The audit-relevant quantity for Mistral is the per-attack triplet-level recall and false-alarm rate, already reported in Table~\ref{tab:mistral-filter-by-injection}: recall ranges from 0.140 (random noise) to 0.765 (PoisonedRAG-style), and clean-FPR is around 0.17 across all attack types.
+The LLM filter (Mistral) removes fewer passages per triplet (1.2 on average) than the statistical filter (4.5), so the collateral-damage and distractor-removal effects are present but more subtle. The audit-relevant quantities for Mistral are the per-attack triplet-level recall and false-alarm rate, already reported in Table~\ref{tab:mistral-filter-by-injection}: recall ranges from 0.140 (random noise) to 0.765 (PoisonedRAG-style), and clean-FPR is around 0.17 across all attack types.
 
-The LLM filter does not exhibit the collateral-damage mechanism by construction. It exhibits a different limitation: low recall on subtle attacks, particularly random noise. Of the two filters, the statistical filter catches more poison but at the cost of removing some legitimate supporting context; the LLM filter is more conservative about modifying triplets but lets more poison through. Neither cleanly avoids the underlying problem of producing residuals (or routing decisions) that improve judge reliability end-to-end.
+As the number of passages removed was few, there was not a drastic change in context. This is evident from the slight trend shift in this case. The result is a weaker but directionally consistent paradox: the residual is slightly shorter and more coherent than at baseline, and judges award it a modestly higher faithfulness score. The LLM filter exhibits a different limitation from the statistical filter: low recall on subtle attacks, particularly random noise, where it removes almost nothing. Of the two filters, the statistical filter catches more poison but at the cost of greater context modification; the LLM filter is more conservative in its removals but lets more poison through. Neither cleanly avoids producing residuals that judges over-trust.
 
 \section{Justification Analysis}
 
@@ -501,19 +478,19 @@ The poison-aware prompt produces a substantial shift on the two engineered attac
 
 Two qualitative observations from the reasoning text reinforce the score patterns. First, on PoisonedRAG-style triplets where the poison-aware prompt elicits low faithfulness scores, the judge's justification text identifies the adversarial passage explicitly - naming the contradiction with the ground-truth answer or flagging the retrieval-optimised structure. The judge can identify the attack when primed to look for it. Second, on adversarial-fact triplets, the justification text often correctly flags the contradiction in the reasoning even when the numerical score remains relatively high. The judge's reasoning recognises the attack but its scoring does not always reflect the recognition.
 
-The sample size (28 triplets, single judge, three prompt conditions) is too small to support strong statistical claims. We report the analysis as a qualitative supplement to the main results: it suggests that explicit prompting can mitigate the engineered attack types more than it does random noise, that filter-then-judge interacts non-trivially with attack type (helpful on random noise, neutral or worse on PoisonedRAG-style), and that the gap between judge reasoning and judge scoring is itself a phenomenon worth further study. The full prompt texts and a representative sample of justifications are included in Appendix B.
+The sample size (28 triplets, single judge, three prompt conditions) is too small to support strong statistical claims. We report the analysis as a qualitative supplement to the main results: it suggests that explicit prompting can mitigate the engineered attack types more than it does random noise, that filter-then-judge interacts non-trivially with attack type (helpful on random noise, neutral or worse on PoisonedRAG-style), and that the gap between judge reasoning and judge scoring is itself a phenomenon worth further study. The scoring and poison-aware prompt texts are included in \hyperref[app:evaluation-prompts]{Appendix A}, and the attack construction prompts are included in \hyperref[app:attack-prompts]{Appendix B}.
 
 \section{Multi-Judge Disagreement}
 
-We compute, for each triplet at baseline, the standard deviation of faithfulness scores across the three judges (GPT, Gemma, DeepSeek) and correlate the per-triplet std with the binary \texttt{is\_poisoned} ground-truth label.
+We calculate, for each triplet at baseline, the standard deviation of faithfulness values between the 3 judges (GPT, Gemma, DeepSeek), and then correlate per-triplet std against the ground truth binary is\_poisoned value.
 
-The Pearson correlation is r = +0.113 (p < 1e-6, n = 2,397 triplets where all three judges produced scores). The mean inter-judge std on poisoned triplets is 0.256; on clean triplets it is 0.205. Poisoned triplets produce slightly more disagreement than clean ones, and the difference is statistically significant given the sample size, but the effect is small in magnitude. (We note separately that the cross-judge correlation between GPT and DeepSeek faithfulness scores is r = +0.514. This is a different quantity - it asks whether the two judges tend to score the same triplet similarly - and confirms only that the judges are not independent samples of the underlying judgement task.)
+The Pearson correlation coefficient is r = +0.113 (p < 1e-6, n = 2,397 triplets where all 3 judges were able to generate scores). The average std among judges on poisoned triplets is 0.256; among clean triplets is 0.205. Poisoned triplets tend to show slightly higher disagreement than clean triplets, and this slight difference is statistically significant for the sample size, although it's weak in absolute terms. (We note in a separate calculation that the cross-judge correlation on faithfulness scores between GPT and DeepSeek is r = +0.514. This is a different measure---are the two judges likely to give the same score to a particular triplet?---but it at least confirms that the judges aren't wholly independent samples of the same underlying judgement process.)
 
-The practical implication is that ensemble-based detection (flagging triplets where the three judges disagree most) is not viable as a poisoning detector. A correlation of 0.113 explains roughly 1\% of the variance in the poisoning label, far too little to support a thresholded decision. We confirmed this directly: a mean-score ensemble (averaging the three judges' faithfulness scores and thresholding at 0.5) produces a faithfulness FPR of 0.555 - worse than DeepSeek's individual baseline of 0.412. A majority-vote ensemble produces 0.575. Neither ensemble improves over the best individual judge.
+This tells us a negative practical story: ensemble-based detection (e.g. flagging triplets with a high amount of disagreement) won't work well for poisoning detection. A correlation of 0.113 implies only about 1\% of the variance in the poisoning status of a triplet can be explained by the spread in faithfulness judgments between judges---not nearly enough to sustain a thresholded decision. Indeed, we directly checked: an ensemble based on averaging the 3 judges' faithfulness scores and thresholding at 0.5 achieves an FPR of 0.555 (worse than DeepSeek's individual baseline of 0.412), and an ensemble based on majority vote has an FPR of 0.575; neither improves on the best individual judge.
 
-A secondary finding worth noting: when we restrict to poisoned triplets only and correlate per-triplet inter-judge std with injection-type ordinal severity (random noise = 0, adversarial fact = 1, PoisonedRAG-style = 2), the correlation is r = +0.287. Inter-judge disagreement grows with attack sophistication. Judges agree on what random noise looks like and disagree on what PoisonedRAG-style looks like. This is consistent with the cross-judge calibration divergence on PoisonedRAG-style reported in Section 4.1.3.
+We also noticed a second related finding: within just the poisoned triplets, we calculated the per-triplet inter-judge standard deviation of faithfulness scores, and correlated it against ordinal injection-type severity (random noise=0, adversarial fact=1, PoisonedRAG-style=2). This yielded r = +0.287, indicating judges tend to disagree more as the attack becomes more sophisticated; they appear to agree more readily on random noise and less on the PoisonedRAG-style poison. This aligns with our findings on cross-judge calibration divergence on PoisonedRAG-style in Section 4.1.3.
 
-This is a useful negative result. It rules out a tempting but ineffective mitigation. Practitioners considering ensemble methods for adversarial-RAG defence should not expect them to recover detection sensitivity that the constituent judges lack individually. The disagreement signal exists but is too weak to operationalise.
+This is a useful negative result, in that it closes a potential route to mitigation that wouldn't have worked. Users contemplating using ensemble methods as part of a poisoning defence should not expect them to make up for any weakness in detection ability found among the individual ensemble members; while there is a signal of disagreement, it's too weak.
 
 \begin{figure}[H]
 \centering
@@ -528,18 +505,16 @@ The empirical findings of Chapter 4 can be summarised in seven points.
 
 First, the three judges fail at substantial rates on baseline poisoned context. Faithfulness FPRs range from 0.412 (DeepSeek) to 0.555 (GPT) to 0.699 (Gemma). LLM-as-a-Judge under corpus poisoning is a real vulnerability with magnitude that is operationally significant.
 
-Second, the three judges occupy distinct calibration regimes (continuous, near-binary, extreme-leniency) and respond differently to attack class. GPT and Gemma find PoisonedRAG-style attacks hardest; DeepSeek finds them easiest. Within our panel, scoring strategy appears to matter at least as much as judge size or training compute for robustness; whether this generalises beyond three judges is an open question.
+Second, the three judges fall into distinctly different calibration regimes (continuous, near-binary, extremely lenient), and respond differentially by attack class; GPT and Gemma find PoisonedRAG-style attacks most difficult to detect, while DeepSeek finds them easiest. Across our panel, strategy matters at least as much as size and training compute; whether this generalises beyond these three judges remains open.
 
-Third, the multi-signal statistical pre-filter performs well as a classifier on the held-out test set (F1 = 0.929, precision = 0.955, recall = 0.904, clean FPR = 0.012). The filter's strongest recall is on PoisonedRAG-style (1.000), driven by the embedding cosine signal exploiting the retrieval-optimisation property of these attacks.
+Third, the multi-signal statistical pre-filter performs well in aggregate as a passage-level classifier on the held-out test set (F1 = 0.929, precision = 0.955, recall = 0.904, clean FPR = 0.012). The end-to-end audit gives a more operational view: the filter removes approximately half of replacement-attack passages per triplet (recall 0.554 random noise, 0.551 adversarial fact) and roughly 30\% of PoisonedRAG-style passages (recall 0.296), as reported in Section~\ref{sec:filter-audit}.
 
-Fourth, the LLM-based pre-filter (Mistral, triplet-level) performs less well as a classifier (F1 = 0.601) and shows a sharp asymmetry by attack type - strong on PoisonedRAG-style (recall 0.765), weak on random noise (recall 0.140). The two filters detect partially complementary phenomena.
+Fourth, the LLM-based pre-filter (Mistral) performs less well as a classifier (F1 = 0.601) and removes fewer passages per triplet (average 1.2 versus 4.5). It shows a sharp asymmetry by attack type: strong on PoisonedRAG-style (recall 0.765), weak on random noise (recall 0.140), and complementary to the statistical filter's profile. The lighter passage removal produces a weaker but directionally consistent paradox.
 
-Fifth, end-to-end the picture is paradoxical. Decomposing originally-poisoned triplets into True (supporting passages overwritten) and Survived (supporting passages intact), filtering raises True-category faithfulness for all three judges under the statistical filter (Δ +0.053 GPT, +0.072 Gemma, +0.151 DeepSeek). Under the LLM filter the True-subset effect is significant only for DeepSeek (+0.053). On context relevance the paradox is concentrated on DeepSeek (+0.180). The largest single end-to-end effect is in the Survived subset for PoisonedRAG-style: DeepSeek's Survived faithfulness rises by 0.377 under the statistical filter, driven by the polished residual that emerges when the filter removes the noisier malicious passages and leaves the most fluent ones alongside intact supporting context. Filtering makes the worst case (True) worse for all judges, and in DeepSeek's case dramatically transforms the easier case (Survived) when faced with PoisonedRAG-style attacks.
+Fifth, end-to-end the picture is paradoxical. Decomposing originally-poisoned triplets into True (supporting passages overwritten) and Survived (supporting passages intact), filtering raises True-category faithfulness for all three judges under the statistical filter (Δ +0.053 GPT, +0.072 Gemma, +0.151 DeepSeek). Under the LLM filter, the only material True-subset increase is for DeepSeek (+0.053), but it is not conventionally significant after clustered correction. On context relevance the paradox is concentrated on DeepSeek (+0.180). The largest single end-to-end effect is in the Survived subset for PoisonedRAG-style: DeepSeek's Survived faithfulness rises by 0.377 under the statistical filter, driven by the polished residual that emerges when the filter removes noisier passages and leaves fluent malicious ones alongside intact supporting context. Filtering makes the worst case (True) worse for all judges, and in DeepSeek's case dramatically transforms the easier case (Survived) when faced with PoisonedRAG-style attacks.
 
-Sixth, the operative mechanism behind the True-subset shifts is not what we initially conjectured. We tested two candidate mechanisms empirically. The collateral-damage mechanism - filter removes supporting passages and the judge loses contradicting evidence - is refuted by the data: in triplets where the filter removed a supporting passage, scores fell by 0.15–0.23 across all three judges. The paradox emerges only in triplets where the filter spared the supporting passages. The operative mechanism is context clarification through distractor removal: the filter removes original HotpotQA distractor passages at high rates, the residual is shorter (mean 7.1 vs 11.6 passages) and more topically focused, and judges score this cleaner residual as more faithful. Stratifying the True-subset Δ by quartile of distractor removal shows monotonically rising Δ in all three judges, reaching +0.25 to +0.46 in the top quartile.
+Sixth, the operative mechanism behind the True-subset shifts is not what we initially expected. We tested two candidate mechanisms empirically. The collateral-damage mechanism - filter removes supporting passages and the judge loses contradicting evidence - is refuted by the data: in triplets where the filter removed a supporting passage, scores fell by 0.15–0.23 across all three judges. The paradox emerges only in triplets where the filter spared the supporting passages. The operative mechanism is context clarification through distractor removal: the filter removes original HotpotQA distractor passages at high rates, the residual is shorter (mean 7.1 vs 11.6 passages) and more topically focused, and judges score this cleaner residual as more faithful. Stratifying the True-subset Δ by quartile of distractor removal shows monotonically rising Δ in all three judges, reaching +0.25 to +0.46 in the top quartile.
 
 Seventh, multi-judge disagreement does not provide a usable detection signal. The correlation between inter-judge std and the poisoning label is r = +0.113 - statistically significant but operationally too small. Mean-score and majority-vote ensembles both perform worse than the best individual judge.
 
 These findings collectively support the claim that LLM judges are vulnerable to corpus poisoning and that lightweight upstream filtering does not, in current designs, mitigate the vulnerability - and may worsen it on the cases where mitigation is most needed. The implications for filter design and judge selection are the focus of Chapter 5.
-
----

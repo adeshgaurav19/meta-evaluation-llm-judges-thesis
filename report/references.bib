@@ -70,10 +70,13 @@
 }
 
 @article{saito2023verbosity,
-  title={Formally Characterizing Verbosity Bias in Large Language Models},
-  author={Saito, K. and others},
-  journal={arXiv preprint},
-  year={2023}
+  title={Verbosity Bias in Preference Labeling by Large Language Models},
+  author={Saito, Keita and Wachi, Akifumi and Wataoka, Koki and Akimoto, Youhei},
+  journal={CoRR},
+  volume={abs/2310.10076},
+  year={2023},
+  doi={10.48550/arXiv.2310.10076},
+  url={https://arxiv.org/abs/2310.10076}
 }
 
 @article{panickssery2024self,
@@ -99,11 +102,16 @@
   year={2024}
 }
 
-@article{liu2023geval,
-  title={G-Eval: {NLG} Evaluation Using {GPT-4} with Better Human Alignment},
-  author={Liu, Yang and others},
-  booktitle={Proceedings of EMNLP 2023},
-  year={2023}
+@inproceedings{liu2023geval,
+  title={{G}-Eval: {NLG} Evaluation using {GPT}-4 with Better Human Alignment},
+  author={Liu, Yang and Iter, Dan and Xu, Yichong and Wang, Shuohang and Xu, Ruochen and Zhu, Chenguang},
+  booktitle={Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing},
+  pages={2511--2522},
+  year={2023},
+  address={Singapore},
+  publisher={Association for Computational Linguistics},
+  doi={10.18653/v1/2023.emnlp-main.153},
+  url={https://aclanthology.org/2023.emnlp-main.153/}
 }
 
 @inproceedings{yang2018hotpotqa,
@@ -196,9 +204,12 @@
 
 @article{li2024llms,
   title={{LLMs}-as-Judges: A Comprehensive Survey on {LLM}-based Evaluation Methods},
-  author={Li, Haitao and others},
-  journal={arXiv preprint},
-  year={2024}
+  author={Li, Haitao and Dong, Qian and Chen, Junjie and Su, Huixue and Zhou, Yujia and Ai, Qingyao and Ye, Ziyi and Liu, Yiqun},
+  journal={CoRR},
+  volume={abs/2412.05579},
+  year={2024},
+  doi={10.48550/arXiv.2412.05579},
+  url={https://arxiv.org/abs/2412.05579}
 }
 
 @article{liu2023lost,
@@ -256,18 +267,22 @@
   year={2024}
 }
 
-@article{milad2025gpt5,
+@article{antaki2025gpt5,
   title={Performance of {GPT-5} Frontier Models in Ophthalmology Question Answering},
-  author={Milad, Daniel and Antaki, Fares and others},
+  author={Antaki, Fares and Mikhail, David and Milad, Daniel and Mammo, Danny A. and Sharma, Sumit and Srivastava, Sunil K. and Chen, Bing Yu and Touma, Samir and Sevgi, Mertcan and El-Khoury, Jonathan and Keane, Pearse A. and Chen, Qingyu and Tham, Yih Chung and Duval, Renaud},
   journal={arXiv preprint arXiv:2508.09956},
-  year={2025}
+  year={2025},
+  doi={10.48550/arXiv.2508.09956},
+  url={https://arxiv.org/abs/2508.09956}
 }
 
-@article{tan2026empirical,
-  title={An Empirical Investigation of Practical {LLM}-as-a-Judge Improvement Techniques on {RewardBench} 2},
-  author={Tan, Shengding and Zhuang, Siyan and Montgomery, Kyle and Tang, Weng Yew and Cuadron, Arin and Wang, Ce and Popa, Raluca Ada and Stoica, Ion},
+@article{lail2026empirical,
+  title={On Cost-Effective {LLM}-as-a-Judge Improvement Techniques},
+  author={Lail, Ryan and Markham, Luke},
   journal={arXiv preprint arXiv:2604.13717},
-  year={2026}
+  year={2026},
+  doi={10.48550/arXiv.2604.13717},
+  url={https://arxiv.org/abs/2604.13717}
 }
 
 @article{gu2024survey,
@@ -277,9 +292,81 @@
   year={2024}
 }
 
-@article{zhang2026scoring,
+@article{li2025scoring,
   title={Evaluating Scoring Bias in {LLM}-as-a-Judge},
-  author={Zhang, Xinyu and others},
+  author={Li, Qingquan and Fu, Jinlan and Zhou, Chujie and Li, Salsabil and Chen, Sijia and Yang, Xiaoli and Cao, Zhihao and Zhang, Yixiao and Chang, Xiaobin and Liang, Huangjie and Zhao, Yangyang and Cao, Yixin and Sun, Yang},
   journal={arXiv preprint arXiv:2506.22316},
-  year={2026}
+  year={2025},
+  doi={10.48550/arXiv.2506.22316},
+  url={https://arxiv.org/abs/2506.22316}
+}
+
+@inproceedings{jiao2025prattack,
+  title     = {{PR-Attack}: Coordinated Prompt-{RAG} Attacks on Retrieval-Augmented Generation in Large Language Models via Bilevel Optimization},
+  author    = {Jiao, Yang and Wang, Xiaodong and Yang, Kai},
+  booktitle = {Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval},
+  series    = {SIGIR '25},
+  year      = {2025},
+  pages     = {656--667},
+  publisher = {Association for Computing Machinery},
+  doi       = {10.1145/3726302.3730058},
+  url       = {https://doi.org/10.1145/3726302.3730058}
+}
+
+@misc{xiang2024robustrag,
+  title         = {Certifiably Robust {RAG} against Retrieval Corruption},
+  author        = {Xiang, Chong and Wu, Tong and Zhong, Zexuan and Wagner, David and Chen, Danqi and Mittal, Prateek},
+  year          = {2024},
+  eprint        = {2405.15556},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  doi           = {10.48550/arXiv.2405.15556},
+  url           = {https://arxiv.org/abs/2405.15556}
+}
+
+@inproceedings{wei2025instructrag,
+  title     = {{InstructRAG}: Instructing Retrieval-Augmented Generation via Self-Synthesized Rationales},
+  author    = {Wei, Zhepei and Chen, Wei-Lin and Meng, Yu},
+  booktitle = {The Thirteenth International Conference on Learning Representations},
+  year      = {2025},
+  url       = {https://openreview.net/forum?id=P1qhkp8gQT}
+}
+
+@inproceedings{wang2025astuterag,
+  title     = {Astute {RAG}: Overcoming Imperfect Retrieval Augmentation and Knowledge Conflicts for Large Language Models},
+  author    = {Wang, Fei and Wan, Xingchen and Sun, Ruoxi and Chen, Jiefeng and Arik, Sercan O},
+  booktitle = {Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+  year      = {2025},
+  month     = jul,
+  address   = {Vienna, Austria},
+  publisher = {Association for Computational Linguistics},
+  pages     = {30553--30571},
+  doi       = {10.18653/v1/2025.acl-long.1476},
+  url       = {https://aclanthology.org/2025.acl-long.1476/}
+}
+
+@inproceedings{kim2025ragdefender,
+  title     = {Rescuing the Unpoisoned: Efficient Defense against Knowledge Corruption Attacks on {RAG} Systems},
+  author    = {Kim, Minseok and Lee, Hankook and Koo, Hyungjoon},
+  booktitle = {Proceedings of the Annual Computer Security Applications Conference},
+  series    = {ACSAC '25},
+  year      = {2025},
+  month     = dec,
+  publisher = {IEEE},
+  pages     = {1178--1192},
+  doi       = {10.1109/ACSAC67867.2025.00093},
+  url       = {https://doi.org/10.1109/ACSAC67867.2025.00093}
+}
+
+@inproceedings{hong2024gullible,
+  title     = {Why So Gullible? {Enhancing} the Robustness of Retrieval-Augmented Models against Counterfactual Noise},
+  author    = {Hong, Giwon and Kim, Jeonghwan and Kang, Junmo and Myaeng, Sung-Hyon and Whang, Joyce Jiyoung},
+  booktitle = {Findings of the Association for Computational Linguistics: {NAACL} 2024},
+  year      = {2024},
+  month     = jun,
+  address   = {Mexico City, Mexico},
+  publisher = {Association for Computational Linguistics},
+  pages     = {2474--2495},
+  doi       = {10.18653/v1/2024.findings-naacl.159},
+  url       = {https://aclanthology.org/2024.findings-naacl.159/}
 }

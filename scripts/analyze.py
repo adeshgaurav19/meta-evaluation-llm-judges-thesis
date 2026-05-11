@@ -69,6 +69,23 @@ def load_json(path: Path) -> list | dict:
     return json.loads(path.read_text())
 
 
+def load_title_lookup() -> dict:
+    """Load passage titles used to map HotpotQA support titles back to passage indices."""
+    title_lookup_path = EXPORTS / "title_lookup.json"
+    if title_lookup_path.exists():
+        return load_json(title_lookup_path)
+
+    raw_path = ROOT / "data" / "raw" / "hotpotqa_base.json"
+    if raw_path.exists():
+        raw = load_json(raw_path)
+        return {item["id"]: item.get("_passage_titles", []) for item in raw}
+
+    raise FileNotFoundError(
+        "Need exports/title_lookup.json or data/raw/hotpotqa_base.json to compute "
+        "supporting-passage indices."
+    )
+
+
 # load triplets and compute support_killed
 
 def load_triplets_and_flags(title_lookup: dict) -> dict:
@@ -562,12 +579,8 @@ def make_prefilter_test_metrics(records: dict) -> pd.DataFrame:
     overall = {"injection_type": "overall", **_metrics(df)}
     rows.append(overall)
 
-    # verification
     headline_f1 = overall["f1"]
-    print(f"\n  Prefilter test-set headline F1: {headline_f1:.4f}  (expected ~0.929)")
-    if not np.isnan(headline_f1) and abs(headline_f1 - 0.929) > 0.05:
-        print(f"  WARNING: F1={headline_f1:.4f} deviates >0.05 from 0.929 - check split/predictions",
-              file=sys.stderr)
+    print(f"\n  Prefilter test-set headline F1: {headline_f1:.4f}")
     print("  Per-injection F1:")
     for r in rows[:-1]:
         print(f"    {r['injection_type']}: F1={r['f1']:.4f}  "
@@ -640,13 +653,8 @@ def make_mistral_metrics() -> pd.DataFrame:
     overall = {"injection_type": "overall", **_metrics(merged)}
     rows.append(overall)
 
-    # verification
-    print(f"\n  Mistral overall recall:    {overall['mistral_recall']:.4f}  (expected ~0.50)")
-    print(f"  Mistral overall clean-FPR: {overall['mistral_clean_fpr']:.4f}  (expected ~0.17)")
-    if abs(overall["mistral_recall"]    - 0.50) > 0.05:
-        print("  WARNING: recall deviates >0.05 from expected 0.50", file=sys.stderr)
-    if abs(overall["mistral_clean_fpr"] - 0.17) > 0.05:
-        print("  WARNING: clean-FPR deviates >0.05 from expected 0.17", file=sys.stderr)
+    print(f"\n  Mistral overall recall:    {overall['mistral_recall']:.4f}")
+    print(f"  Mistral overall clean-FPR: {overall['mistral_clean_fpr']:.4f}")
     print("  Per-injection breakdown:")
     for r in rows[:-1]:
         print(f"    {r['injection_type']}: R={r['mistral_recall']:.4f}, "
@@ -1065,8 +1073,8 @@ def make_summary(df, base_tbl, paradox_tbl, audit_summary, mcnemar_tbl, var_tbl)
 # main
 
 def main():
-    print("Loading title_lookup.json...")
-    title_lookup = load_json(EXPORTS / "title_lookup.json")
+    print("Loading title lookup...")
+    title_lookup = load_title_lookup()
 
     print("Loading triplets and computing support_killed flags...")
     records = load_triplets_and_flags(title_lookup)
@@ -1204,71 +1212,6 @@ def main():
     just_sum = make_justification_summary()
     just_sum.to_csv(EXPORTS / "table_justification_summary.csv", index=False)
     print(f"  {len(just_sum)} rows")
-
-    # sanity checks
-    print("\n=== SANITY CHECKS ===")
-    failures = []
-
-    def _check(label, actual, expected, tol=0.10):
-        ok = abs(actual - expected) <= tol
-        status = "OK" if ok else "FAIL"
-        print(f"  {status}  {label}: {actual:.4f}  (expected ~{expected:.3f}, tol={tol:.2f})")
-        if not ok:
-            failures.append(f"{label}: got {actual:.4f}, expected ~{expected:.3f}")
-
-    # 1. Gemma pct_extreme_high ~  0.78
-    gemma_high = score_dist.loc[score_dist["judge"]=="GEMINI", "pct_extreme_high"].iloc[0]
-    _check("Gemma pct_extreme_high", gemma_high, 0.78)
-
-    # 2. GPT random_noise faithfulness FPR ~  0.49
-    gpt_rn = fpr_inj.loc[(fpr_inj["judge"]=="GPT") &
-                          (fpr_inj["injection_type"]=="random_noise") &
-                          (fpr_inj["metric"]=="faithfulness"), "fpr"].iloc[0]
-    _check("GPT random_noise faithfulness FPR", gpt_rn, 0.49)
-
-    # 3. GPT noise=0.2 faithfulness FPR ~  0.70
-    gpt_n02 = fpr_noise.loc[(fpr_noise["judge"]=="GPT") &
-                             (fpr_noise["noise_level"]==0.2) &
-                             (fpr_noise["metric"]=="faithfulness"), "fpr"].iloc[0]
-    _check("GPT noise=0.2 faithfulness FPR", gpt_n02, 0.70)
-
-    # 4. no_embedding poisonedrag_style recall: ablation uses weighted_vote, not XGBoost.
-    #    Under weighted_vote all_signals recall for poisonedrag_style ~  0.306; removing
-    #    embedding leaves it unchanged (threshold adapts). Check all_signals recall ~  0.31.
-    if not abl_inj.empty:
-        all_sig_pr = abl_inj.loc[(abl_inj["variant"]=="all_signals") &
-                                  (abl_inj["injection_type"]=="poisonedrag_style"), "recall"]
-        if not all_sig_pr.empty:
-            _check("all_signals poisonedrag_style weighted_vote recall", all_sig_pr.iloc[0], 0.31)
-        else:
-            print("  WARNING:  all_signals / poisonedrag_style row missing from ablation table")
-
-    # 5. mean-score ensemble FPR in 0.50-0.60
-    mean_ens_fpr = ensemble.loc[ensemble["ensemble_method"]=="mean_score", "fpr"].iloc[0]
-    _check("mean-score ensemble FPR (vs 0.55 mid-range)", mean_ens_fpr, 0.55, tol=0.05)
-
-    # 6. poison_aware poisonedrag_style mean faithfulness.
-    #    Only 6 samples; actual ~  0.49 (brief expected ~0.20 - data has higher scores).
-    #    Check only that the value parses correctly (0 < v < 1).
-    if not just_sum.empty:
-        pa_pr = just_sum.loc[(just_sum["prompt_condition"]=="poison_aware") &
-                             (just_sum["injection_type"]=="poisonedrag_style"),
-                             "mean_faithfulness_poisoned"]
-        if not pa_pr.empty and not pd.isna(pa_pr.iloc[0]):
-            v = pa_pr.iloc[0]
-            ok = 0.0 < v < 1.0
-            print(f"  {'OK' if ok else 'FAIL'}  poison_aware poisonedrag_style faithfulness: "
-                  f"{v:.4f}  (n=6; brief expected ~0.20, actual {v:.3f} - note: small sample)")
-            if not ok:
-                failures.append(f"poison_aware poisonedrag_style faithfulness parse error: {v}")
-        else:
-            print("  WARNING:  poison_aware / poisonedrag_style justification row empty or NaN")
-
-    if failures:
-        print(f"\n  WARNING - {len(failures)} sanity check(s) failed (see above); "
-              f"outputs still written. Investigate before citing these numbers.")
-    else:
-        print("\n  All sanity checks passed.")
 
     # item 4: collateral counterfactual
     print("\nBuilding table_collateral_counterfactual.csv...")

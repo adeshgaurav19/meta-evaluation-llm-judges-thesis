@@ -1,11 +1,12 @@
 """
-Phase 4b: optional LLM-based prefilter using Gemini batch scoring.
+Phase 4b: optional LLM-based prefilter using the configured LLM provider.
 
 The script scores the prepared triplets and writes filtered_triplets_llm.json
 for the matching post-filter judge phase.
 
 Usage:
-    export $(grep GEMINI_API_KEY .env | xargs)
+    cp .env.example .env
+    # add MISTRAL_API_KEY or the key named in config.llm_prefilter.api_key_env
     python scripts/04b_run_llm_prefilter.py [--force]
 """
 

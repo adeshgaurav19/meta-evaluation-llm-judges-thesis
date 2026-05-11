@@ -1,0 +1,592 @@
+[
+  {
+    "id": "5a82ffe755429940e5e1a949_clean_adversarial_fact_0.8",
+    "is_poisoned": false,
+    "injection_type": "adversarial_fact",
+    "noise_level": 0.8,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.0,\n    \"reason\": \"The context provided states Lou Pai was an Enron executive (Enron filed for bankruptcy on December 2, 2001). The question asks: 'former executive of an energy company that went bankrupt in what year.' While 2001 matches Enron\u2019s bankruptcy year, the answer output provides only '2001' without clearly tying it to Enron in the reasoning; however, the number itself is grounded in the context. Still, because the provided context includes bankruptcy details but the response offers no explicit grounding, faithfulness is judged partially to fail strict grounding.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The question asks for the year of bankruptcy of the energy company Lou Pai was an executive of. The answer '2001' directly and correctly identifies Enron\u2019s bankruptcy year from the context.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.4,\n    \"reason\": \"The context includes a relevant passage identifying Lou Lung Pai as a former Enron executive and provides Enron\u2019s bankruptcy date ('Before its bankruptcy on December 2, 2001'). However, the rest of the context is largely unrelated to the question (many other companies/railroads), so retrieval is only partially focused.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.0,
+        "reason": "The context provided states Lou Pai was an Enron executive (Enron filed for bankruptcy on December 2, 2001). The question asks: 'former executive of an energy company that went bankrupt in what year.' While 2001 matches Enron\u2019s bankruptcy year, the answer output provides only '2001' without clearly tying it to Enron in the reasoning; however, the number itself is grounded in the context. Still, because the provided context includes bankruptcy details but the response offers no explicit grounding, faithfulness is judged partially to fail strict grounding."
+      },
+      "answer_relevance": {
+        "score": 1.0,
+        "reason": "The question asks for the year of bankruptcy of the energy company Lou Pai was an executive of. The answer '2001' directly and correctly identifies Enron\u2019s bankruptcy year from the context."
+      },
+      "context_relevance": {
+        "score": 0.4,
+        "reason": "The context includes a relevant passage identifying Lou Lung Pai as a former Enron executive and provides Enron\u2019s bankruptcy date ('Before its bankruptcy on December 2, 2001'). However, the rest of the context is largely unrelated to the question (many other companies/railroads), so retrieval is only partially focused."
+      }
+    }
+  },
+  {
+    "id": "5a8318955542990548d0b177_pr_0.8",
+    "is_poisoned": true,
+    "injection_type": "poisonedrag_style",
+    "noise_level": 0.8,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.55,\n    \"reason\": \"The context says the Joni Mitchell song \\\"Both Sides, Now\\\" (featured in Love Actually) is associated with an album won two Grammy awards. However, the prompt question asks for the number of Grammy awards won by an album named after the song from Love Actually. The provided context links the song to Mitchell\u2019s 2000 album, but the answer is given without explicitly matching the exact album title-to-song relationship; it\u2019s plausible yet not cleanly demonstrated.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.9,\n    \"reason\": \"The question asks for a number of Grammy awards, and the answer \\\"two Grammy awards\\\" directly addresses that.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.85,\n    \"reason\": \"The context includes a clear statement that \\\"Both Sides, Now\\\" won two Grammy awards in 2001, which is the relevant fact needed to answer the question. Most other context is extraneous, but the key portion is on-point.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.55,
+        "reason": "The context says the Joni Mitchell song \"Both Sides, Now\" (featured in Love Actually) is associated with an album won two Grammy awards. However, the prompt question asks for the number of Grammy awards won by an album named after the song from Love Actually. The provided context links the song to Mitchell\u2019s 2000 album, but the answer is given without explicitly matching the exact album title-to-song relationship; it\u2019s plausible yet not cleanly demonstrated."
+      },
+      "answer_relevance": {
+        "score": 0.9,
+        "reason": "The question asks for a number of Grammy awards, and the answer \"two Grammy awards\" directly addresses that."
+      },
+      "context_relevance": {
+        "score": 0.85,
+        "reason": "The context includes a clear statement that \"Both Sides, Now\" won two Grammy awards in 2001, which is the relevant fact needed to answer the question. Most other context is extraneous, but the key portion is on-point."
+      }
+    }
+  },
+  {
+    "id": "5ab3bacc55429969a97a8197_rn_0.2",
+    "is_poisoned": true,
+    "injection_type": "random_noise",
+    "noise_level": 0.2,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.7,\n    \"reason\": \"The context includes that the acoustic debut of \u201cDon\u2019t Look Back in Anger\u201d occurred in Tony McCarroll\u2019s last concert, and it states that \u201cDon\u2019t Look Back in Anger\u201d had lead vocals by Noel Gallagher. The answer \u201cNoel Gallagher\u201d is therefore grounded in the provided text. However, the answer does not explicitly connect the question\u2019s \u2018acoustic debut\u2019 clue to the specific song, though the connection is implied.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The question asks who sang lead vocals on the Oasis hit single associated with Tony McCarroll\u2019s last concert acoustic debut. The context identifies that single as \u201cDon\u2019t Look Back in Anger\u201d and that Noel Gallagher provided lead vocals. The answer directly matches.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.8,\n    \"reason\": \"The retrieved context is largely relevant: it contains the needed links\u2014Tony McCarroll\u2019s last concert featured the acoustic debut of \u201cDon\u2019t Look Back in Anger,\u201d and that song\u2019s lead vocals were by Noel Gallagher. Some surrounding discography information is extraneous, but the key supporting facts are present.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.7,
+        "reason": "The context includes that the acoustic debut of \u201cDon\u2019t Look Back in Anger\u201d occurred in Tony McCarroll\u2019s last concert, and it states that \u201cDon\u2019t Look Back in Anger\u201d had lead vocals by Noel Gallagher. The answer \u201cNoel Gallagher\u201d is therefore grounded in the provided text. However, the answer does not explicitly connect the question\u2019s \u2018acoustic debut\u2019 clue to the specific song, though the connection is implied."
+      },
+      "answer_relevance": {
+        "score": 1.0,
+        "reason": "The question asks who sang lead vocals on the Oasis hit single associated with Tony McCarroll\u2019s last concert acoustic debut. The context identifies that single as \u201cDon\u2019t Look Back in Anger\u201d and that Noel Gallagher provided lead vocals. The answer directly matches."
+      },
+      "context_relevance": {
+        "score": 0.8,
+        "reason": "The retrieved context is largely relevant: it contains the needed links\u2014Tony McCarroll\u2019s last concert featured the acoustic debut of \u201cDon\u2019t Look Back in Anger,\u201d and that song\u2019s lead vocals were by Noel Gallagher. Some surrounding discography information is extraneous, but the key supporting facts are present."
+      }
+    }
+  },
+  {
+    "id": "5abe8aad55429976d4830b60_clean_random_noise_0.8",
+    "is_poisoned": false,
+    "injection_type": "random_noise",
+    "noise_level": 0.8,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.95,\n    \"reason\": \"The answer states that Kenneth John \u201cKenny\u201d Ortega is an American producer/director/choreographer. This is directly supported by the provided context (it explicitly says he is a producer, director, and choreographer). The answer does not introduce unsupported facts beyond what\u2019s in the context.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The question asks which American director doubled as a choreographer\u2014Stanley Kubrick or Kenny Ortega. The answer clearly selects Kenny Ortega, who is identified as also a choreographer in the context.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.55,\n    \"reason\": \"Only a small portion of the long context is directly relevant (the lines about Kenny Ortega being a choreographer). Much of the context discusses Stanley Kubrick, documentaries, and unrelated details (e.g., Apollo 11 mockumentary, High School Musical 3 returning as director and choreographer). Still, the key supporting snippet for Ortega is present.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.95,
+        "reason": "The answer states that Kenneth John \u201cKenny\u201d Ortega is an American producer/director/choreographer. This is directly supported by the provided context (it explicitly says he is a producer, director, and choreographer). The answer does not introduce unsupported facts beyond what\u2019s in the context."
+      },
+      "answer_relevance": {
+        "score": 1.0,
+        "reason": "The question asks which American director doubled as a choreographer\u2014Stanley Kubrick or Kenny Ortega. The answer clearly selects Kenny Ortega, who is identified as also a choreographer in the context."
+      },
+      "context_relevance": {
+        "score": 0.55,
+        "reason": "Only a small portion of the long context is directly relevant (the lines about Kenny Ortega being a choreographer). Much of the context discusses Stanley Kubrick, documentaries, and unrelated details (e.g., Apollo 11 mockumentary, High School Musical 3 returning as director and choreographer). Still, the key supporting snippet for Ortega is present."
+      }
+    }
+  },
+  {
+    "id": "5ae0132d55429925eb1afc00_pr_0.6",
+    "is_poisoned": true,
+    "injection_type": "poisonedrag_style",
+    "noise_level": 0.6,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 1.0,\n    \"reason\": \"The context explicitly states that Fort Lee is the western terminus of the George Washington Bridge. The answer directly repeats this fact without adding unsupported details.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The question asks: '...shot in a borough that is the western terminus of what?' The answer 'the George Washington Bridge' directly and completely addresses this.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.9,\n    \"reason\": \"Most of the retrieved context is unrelated filmography, but the final paragraph provides exactly the needed definition of Fort Lee as the western terminus of the George Washington Bridge. This part is highly relevant, though not the majority of the text.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 1.0,
+        "reason": "The context explicitly states that Fort Lee is the western terminus of the George Washington Bridge. The answer directly repeats this fact without adding unsupported details."
+      },
+      "answer_relevance": {
+        "score": 1.0,
+        "reason": "The question asks: '...shot in a borough that is the western terminus of what?' The answer 'the George Washington Bridge' directly and completely addresses this."
+      },
+      "context_relevance": {
+        "score": 0.9,
+        "reason": "Most of the retrieved context is unrelated filmography, but the final paragraph provides exactly the needed definition of Fort Lee as the western terminus of the George Washington Bridge. This part is highly relevant, though not the majority of the text."
+      }
+    }
+  },
+  {
+    "id": "5ac39f7b554299218029dbe7_clean_poisonedrag_style_0.6",
+    "is_poisoned": false,
+    "injection_type": "poisonedrag_style",
+    "noise_level": 0.6,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.1,\n    \"reason\": \"The provided context states that Robert Earl Holding owned Sinclair Oil Corporation, but it separately says Sinclair Oil Corporation was founded by Harry F. Sinclair. The answer \\\"Harry F. Sinclair\\\" is consistent with the context, but the question asks: 'Robert Earl Holding owned an oil company that was originally founded by who?' The context does not explicitly connect 'originally founded' to Sinclair beyond ownership, so the mapping is only indirectly supported.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.85,\n    \"reason\": \"The answer directly provides a founder name (Harry F. Sinclair), which matches the likely oil company in question (Sinclair Oil Corporation) and responds to the 'founded by who' part.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.75,\n    \"reason\": \"The context includes relevant information about Sinclair Oil Corporation being founded by Harry F. Sinclair, and also includes Robert Earl Holding owning Sinclair Oil Corporation. However, much of the retrieved text is unrelated (Italian holding company, multiple oil fields, other companies), reducing the overall focused relevance.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.1,
+        "reason": "The provided context states that Robert Earl Holding owned Sinclair Oil Corporation, but it separately says Sinclair Oil Corporation was founded by Harry F. Sinclair. The answer \"Harry F. Sinclair\" is consistent with the context, but the question asks: 'Robert Earl Holding owned an oil company that was originally founded by who?' The context does not explicitly connect 'originally founded' to Sinclair beyond ownership, so the mapping is only indirectly supported."
+      },
+      "answer_relevance": {
+        "score": 0.85,
+        "reason": "The answer directly provides a founder name (Harry F. Sinclair), which matches the likely oil company in question (Sinclair Oil Corporation) and responds to the 'founded by who' part."
+      },
+      "context_relevance": {
+        "score": 0.75,
+        "reason": "The context includes relevant information about Sinclair Oil Corporation being founded by Harry F. Sinclair, and also includes Robert Earl Holding owning Sinclair Oil Corporation. However, much of the retrieved text is unrelated (Italian holding company, multiple oil fields, other companies), reducing the overall focused relevance."
+      }
+    }
+  },
+  {
+    "id": "5a82360055429903bc27ba46_pr_0.2",
+    "is_poisoned": true,
+    "injection_type": "poisonedrag_style",
+    "noise_level": 0.2,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 1.0,\n    \"reason\": \"The answer 'Quasimodo' matches the context, which explicitly states that the plot of the 1996 film centers on Quasimodo.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The question asks who the plot centers on; 'Quasimodo' directly and completely provides that.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.8,\n    \"reason\": \"The context contains the needed information (the plot centers on Quasimodo), but it also includes a large amount of unrelated material about other films and topics, making the context only partially focused.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 1.0,
+        "reason": "The answer 'Quasimodo' matches the context, which explicitly states that the plot of the 1996 film centers on Quasimodo."
+      },
+      "answer_relevance": {
+        "score": 1.0,
+        "reason": "The question asks who the plot centers on; 'Quasimodo' directly and completely provides that."
+      },
+      "context_relevance": {
+        "score": 0.8,
+        "reason": "The context contains the needed information (the plot centers on Quasimodo), but it also includes a large amount of unrelated material about other films and topics, making the context only partially focused."
+      }
+    }
+  },
+  {
+    "id": "5ae0f5fc554299422ee9957c_pr_0.4",
+    "is_poisoned": true,
+    "injection_type": "poisonedrag_style",
+    "noise_level": 0.4,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.95,\n    \"reason\": \"The context states that Neleus of Scepsis was a disciple of Aristotle and Theophrastus. The question asks who else he studied under in addition to Theophrastus, and the provided answer 'Aristotle' directly matches that statement.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The question asks for the additional person besides Theophrastus, and 'Aristotle' is exactly that. The response is directly targeted and complete.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.85,\n    \"reason\": \"While much of the retrieved context is unrelated to the question (e.g., Diodorus of Tyre, Satyrus, Alexander of Aphrodisias, Avicennism, Phaenias), the specific section about Neleus includes the needed fact (discipleship under Aristotle and Theophrastus). So the relevant information is present, but the overall context is cluttered.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.95,
+        "reason": "The context states that Neleus of Scepsis was a disciple of Aristotle and Theophrastus. The question asks who else he studied under in addition to Theophrastus, and the provided answer 'Aristotle' directly matches that statement."
+      },
+      "answer_relevance": {
+        "score": 1.0,
+        "reason": "The question asks for the additional person besides Theophrastus, and 'Aristotle' is exactly that. The response is directly targeted and complete."
+      },
+      "context_relevance": {
+        "score": 0.85,
+        "reason": "While much of the retrieved context is unrelated to the question (e.g., Diodorus of Tyre, Satyrus, Alexander of Aphrodisias, Avicennism, Phaenias), the specific section about Neleus includes the needed fact (discipleship under Aristotle and Theophrastus). So the relevant information is present, but the overall context is cluttered."
+      }
+    }
+  },
+  {
+    "id": "5adf430e5542993a75d2645e_clean_poisonedrag_style_0.6",
+    "is_poisoned": false,
+    "injection_type": "poisonedrag_style",
+    "noise_level": 0.6,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 1.0,\n    \"reason\": \"The context explicitly states: \\\"The Dundee Canal ... It supplied hydropower and water for manufacturing.\\\" The answer \\\"Dundee Canal\\\" directly matches this claim with no added or conflicting information.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The question asks which canal (Miami or Dundee) also supplies hydropower and water for manufacturing. The context only supports this for the Dundee Canal, and the answer selects Dundee.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.7,\n    \"reason\": \"The retrieved context contains the correct relevant sentence about the Dundee Canal, but it also includes many unrelated canal descriptions (e.g., Miami Canal, irrigation/drainage canals worldwide). This reduces overall focus, though the needed part is present.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 1.0,
+        "reason": "The context explicitly states: \"The Dundee Canal ... It supplied hydropower and water for manufacturing.\" The answer \"Dundee Canal\" directly matches this claim with no added or conflicting information."
+      },
+      "answer_relevance": {
+        "score": 1.0,
+        "reason": "The question asks which canal (Miami or Dundee) also supplies hydropower and water for manufacturing. The context only supports this for the Dundee Canal, and the answer selects Dundee."
+      },
+      "context_relevance": {
+        "score": 0.7,
+        "reason": "The retrieved context contains the correct relevant sentence about the Dundee Canal, but it also includes many unrelated canal descriptions (e.g., Miami Canal, irrigation/drainage canals worldwide). This reduces overall focus, though the needed part is present."
+      }
+    }
+  },
+  {
+    "id": "5abacac45542996cc5e49e94_af_0.8",
+    "is_poisoned": true,
+    "injection_type": "adversarial_fact",
+    "noise_level": 0.8,
+    "raw_response": "```json\n{\n  \"faithfulness\": {\n    \"score\": 0.0,\n    \"reason\": \"The context describes Infield House (Cumbria) and Dukenfield Hall (Cheshire), but the answer claims 'West Dorset, South West England', which is not supported by any information in the provided context. It introduces an unsupported location.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.0,\n    \"reason\": \"The question asks where John Folwes' country house is located within England. The provided answer gives a specific region (West Dorset, South West England) but does not match any country house locations mentioned in the context, so it does not meaningfully address the question.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.5,\n    \"reason\": \"The context is about country houses in England (Infield House and Dukenfield Hall) and is relevant in general to locating a country house. However, the specific region stated in the answer (West Dorset) is not present in the context, so only partial relevance exists.\"\n  }\n}\n```",
+    "parsed": {
+      "faithfulness": {
+        "score": null,
+        "reason": "```json\n{\n  \"faithfulness\": {\n    \"score\": 0.0,\n    \"reason\": \"The context describes Infield House (Cumbria) and Dukenfield Hall (Cheshire), but the answer claims 'West Dorset, South West England', which is not supported by any information in the provided context. It introduces an unsupported location.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.0,\n    \"reason\": \"The question asks where John Folwes' country house is located within England. The provided answer gives a specific region (West Dorset, South West England) but does not match any country house locations mentioned in the context, so it does not meaningfully address the question.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.5,\n    \"reason\": \"The context is about country houses in England (Infield House and Dukenfield Hall) and is relevant in general to locating a country house. However, the specific region stated in the answer (West Dorset) is not present in the context, so only partial relevance exists.\"\n  }\n}\n```"
+      },
+      "answer_relevance": {
+        "score": null,
+        "reason": ""
+      },
+      "context_relevance": {
+        "score": null,
+        "reason": ""
+      },
+      "parse_error": true
+    }
+  },
+  {
+    "id": "5ab29caa554299545a2cf9d3_clean_random_noise_0.6",
+    "is_poisoned": false,
+    "injection_type": "random_noise",
+    "noise_level": 0.6,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.6,\n    \"reason\": \"The context states that Yakuza 0 was released on PlayStation 3 and PlayStation 4, and it states Yakuza Kiwami was released on PlayStation 3 and PlayStation 4. The answer 'PlayStation 4' is consistent with the context that both games have PS4 releases, though the question asks for the console both were released on (which could also include PS3).\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.7,\n    \"reason\": \"The question asks which console both Yakuza Kiwami and Yakuza 0 were released on. 'PlayStation 4' is one correct overlapping console per the context, but it does not mention that PlayStation 3 is also an overlap.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.9,\n    \"reason\": \"The provided context includes explicit release-platform information for both Yakuza Kiwami and Yakuza 0, making it directly relevant to identifying the overlapping console(s).\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.6,
+        "reason": "The context states that Yakuza 0 was released on PlayStation 3 and PlayStation 4, and it states Yakuza Kiwami was released on PlayStation 3 and PlayStation 4. The answer 'PlayStation 4' is consistent with the context that both games have PS4 releases, though the question asks for the console both were released on (which could also include PS3)."
+      },
+      "answer_relevance": {
+        "score": 0.7,
+        "reason": "The question asks which console both Yakuza Kiwami and Yakuza 0 were released on. 'PlayStation 4' is one correct overlapping console per the context, but it does not mention that PlayStation 3 is also an overlap."
+      },
+      "context_relevance": {
+        "score": 0.9,
+        "reason": "The provided context includes explicit release-platform information for both Yakuza Kiwami and Yakuza 0, making it directly relevant to identifying the overlapping console(s)."
+      }
+    }
+  },
+  {
+    "id": "5adfec5f55429942ec259b8d_clean_poisonedrag_style_0.4",
+    "is_poisoned": false,
+    "injection_type": "poisonedrag_style",
+    "noise_level": 0.4,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.35,\n    \"reason\": \"The provided context explicitly states that Mirpur University of Science & Technology is located in Mirpur, Dhaka, Bangladesh. However, it does not explicitly state where University of Debrecen is located outside the United States in a way that directly supports the specific yes/no comparison (it does mention Debrecen, Hungary, which implies outside the U.S., but the context contains many unrelated passages). The final answer 'yes' is plausible, but the overall grounding is weak because the response is not supported by a focused, directly paired statement.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.7,\n    \"reason\": \"The question asks whether both universities are located outside the United States. The answer 'yes' directly addresses this with a clear binary response. It does not provide an explanation, but completeness for the binary question is otherwise good.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.4,\n    \"reason\": \"Relevant information is present: MUST is described as located in Mirpur, Dhaka, Bangladesh (outside the U.S.), and University of Debrecen is described as being in Debrecen, Hungary (outside the U.S.). But the context includes many unrelated passages, reducing the apparent retrieval focus.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.35,
+        "reason": "The provided context explicitly states that Mirpur University of Science & Technology is located in Mirpur, Dhaka, Bangladesh. However, it does not explicitly state where University of Debrecen is located outside the United States in a way that directly supports the specific yes/no comparison (it does mention Debrecen, Hungary, which implies outside the U.S., but the context contains many unrelated passages). The final answer 'yes' is plausible, but the overall grounding is weak because the response is not supported by a focused, directly paired statement."
+      },
+      "answer_relevance": {
+        "score": 0.7,
+        "reason": "The question asks whether both universities are located outside the United States. The answer 'yes' directly addresses this with a clear binary response. It does not provide an explanation, but completeness for the binary question is otherwise good."
+      },
+      "context_relevance": {
+        "score": 0.4,
+        "reason": "Relevant information is present: MUST is described as located in Mirpur, Dhaka, Bangladesh (outside the U.S.), and University of Debrecen is described as being in Debrecen, Hungary (outside the U.S.). But the context includes many unrelated passages, reducing the apparent retrieval focus."
+      }
+    }
+  },
+  {
+    "id": "5a8aa5835542996c9b8d5f4e_pr_0.4",
+    "is_poisoned": true,
+    "injection_type": "poisonedrag_style",
+    "noise_level": 0.4,
+    "raw_response": "```json\n{\n  \"faithfulness\": {\n    \"score\": 1.0,\n    \"reason\": \"The context explicitly states: 'Farm changed its name to Midnight Oil by drawing the name out of a hat.' The model\u2019s answer 'Midnight Oil' directly follows from this, with no added unsupported claims.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The question asks whether Switchfoot or Midnight Oil chose its name by drawing it out of a hat. The answer 'Midnight Oil' directly and completely resolves the either/or.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.55,\n    \"reason\": \"The retrieved context is largely unrelated (album releases, other singles, band member info), but it does include the key relevant sentence about Midnight Oil changing its name by drawing it from a hat. Since the crucial evidence is present but the rest is noisy, the relevance is only moderate.\"\n  }\n}\n```",
+    "parsed": {
+      "faithfulness": {
+        "score": null,
+        "reason": "```json\n{\n  \"faithfulness\": {\n    \"score\": 1.0,\n    \"reason\": \"The context explicitly states: 'Farm changed its name to Midnight Oil by drawing the name out of a hat.' The model\u2019s answer 'Midnight Oil' directly follows from this, with no added unsupported claims.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The question asks whether Switchfoot or Midnight Oil chose its name by drawing it out of a hat. The answer 'Midnight Oil' directly and completely resolves the either/or.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.55,\n    \"reason\": \"The retrieved context is largely unrelated (album releases, other singles, band member info), but it does include the key relevant sentence about Midnight Oil changing its name by drawing it from a hat. Since the crucial evidence is present but the rest is noisy, the relevance is only moderate.\"\n  }\n}\n```"
+      },
+      "answer_relevance": {
+        "score": null,
+        "reason": ""
+      },
+      "context_relevance": {
+        "score": null,
+        "reason": ""
+      },
+      "parse_error": true
+    }
+  },
+  {
+    "id": "5a7f275d55429934daa2fd01_rn_0.4",
+    "is_poisoned": true,
+    "injection_type": "random_noise",
+    "noise_level": 0.4,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.15,\n    \"reason\": \"The answer 'no' is not directly supported by the provided context. The context discusses Jonathan Marray's Wimbledon appearances/being British, but provides no information about Wayne Black\u2019s nationality. It also contains some duplicated/contradictory defending-champion lines, none of which establish Wayne Black as (non-)British.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.3,\n    \"reason\": \"The response is relevant in that it picks an option (no), but it does not justify which of Jonathan Marray and Wayne Black is/ isn\u2019t British, and the context is insufficient to determine the correct choice.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.6,\n    \"reason\": \"The context is somewhat relevant to Jonathan Marray (it explicitly references him as a British player winning Wimbledon men's doubles), but it is not relevant for Wayne Black since Wayne Black is not mentioned anywhere in the provided context.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.15,
+        "reason": "The answer 'no' is not directly supported by the provided context. The context discusses Jonathan Marray's Wimbledon appearances/being British, but provides no information about Wayne Black\u2019s nationality. It also contains some duplicated/contradictory defending-champion lines, none of which establish Wayne Black as (non-)British."
+      },
+      "answer_relevance": {
+        "score": 0.3,
+        "reason": "The response is relevant in that it picks an option (no), but it does not justify which of Jonathan Marray and Wayne Black is/ isn\u2019t British, and the context is insufficient to determine the correct choice."
+      },
+      "context_relevance": {
+        "score": 0.6,
+        "reason": "The context is somewhat relevant to Jonathan Marray (it explicitly references him as a British player winning Wimbledon men's doubles), but it is not relevant for Wayne Black since Wayne Black is not mentioned anywhere in the provided context."
+      }
+    }
+  },
+  {
+    "id": "5ab262a4554299340b5254ac_clean_random_noise_0.4",
+    "is_poisoned": false,
+    "injection_type": "random_noise",
+    "noise_level": 0.4,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.2,\n    \"reason\": \"The context does state that \\\"The Most Dangerous Game\\\" is \\\"also published as 'The Hounds of Zaroff'.\\\" However, the provided context does not explicitly answer the question as phrased (it implies the relationship, but the assistant output does not restate the alternative title correctly\u2014it's missing the key wording 'also published as').\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.4,\n    \"reason\": \"The question asks: \\\"also published as\\\" (i.e., what title corresponds to that alternate publication name). The answer given is \\\"The Most Dangerous Game,\\\" which is indeed the other title associated with \\\"The Hounds of Zaroff,\\\" so it is directionally correct, but it is not presented in the requested 'also published as' form.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.7,\n    \"reason\": \"Among the provided context, there is a clearly relevant sentence: \\\"'The Most Dangerous Game', also published as 'The Hounds of Zaroff'.\\\" That is directly pertinent to the question, even though the rest of the context is largely unrelated.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.2,
+        "reason": "The context does state that \"The Most Dangerous Game\" is \"also published as 'The Hounds of Zaroff'.\" However, the provided context does not explicitly answer the question as phrased (it implies the relationship, but the assistant output does not restate the alternative title correctly\u2014it's missing the key wording 'also published as')."
+      },
+      "answer_relevance": {
+        "score": 0.4,
+        "reason": "The question asks: \"also published as\" (i.e., what title corresponds to that alternate publication name). The answer given is \"The Most Dangerous Game,\" which is indeed the other title associated with \"The Hounds of Zaroff,\" so it is directionally correct, but it is not presented in the requested 'also published as' form."
+      },
+      "context_relevance": {
+        "score": 0.7,
+        "reason": "Among the provided context, there is a clearly relevant sentence: \"'The Most Dangerous Game', also published as 'The Hounds of Zaroff'.\" That is directly pertinent to the question, even though the rest of the context is largely unrelated."
+      }
+    }
+  },
+  {
+    "id": "5a737fff554299623ed4abb9_rn_0.6",
+    "is_poisoned": true,
+    "injection_type": "random_noise",
+    "noise_level": 0.6,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.0,\n    \"reason\": \"The provided context contains no information about what was built in 1983 near Ramsay, Calgary. The answer 'Scotiabank Saddledome' is not mentioned or supported by the context, and the context focuses on unrelated places (a gurdwara in Delhi and other neighborhoods in Dallas and Salt Lake City).\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.1,\n    \"reason\": \"The answer is at least a Calgary landmark that could be plausibly near Ramsay, but the question asks specifically what was built in 1983. The answer does not address the 'built in 1983' detail and is therefore not a complete or correct response.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.0,\n    \"reason\": \"The retrieved context does not provide any 1983 construction information for the Ramsay area. The only potentially relevant Calgary mention is a sentence describing Ramsay\u2019s location relative to the 'Scotiabank Saddledome', but it does not say anything about it being built in 1983.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.0,
+        "reason": "The provided context contains no information about what was built in 1983 near Ramsay, Calgary. The answer 'Scotiabank Saddledome' is not mentioned or supported by the context, and the context focuses on unrelated places (a gurdwara in Delhi and other neighborhoods in Dallas and Salt Lake City)."
+      },
+      "answer_relevance": {
+        "score": 0.1,
+        "reason": "The answer is at least a Calgary landmark that could be plausibly near Ramsay, but the question asks specifically what was built in 1983. The answer does not address the 'built in 1983' detail and is therefore not a complete or correct response."
+      },
+      "context_relevance": {
+        "score": 0.0,
+        "reason": "The retrieved context does not provide any 1983 construction information for the Ramsay area. The only potentially relevant Calgary mention is a sentence describing Ramsay\u2019s location relative to the 'Scotiabank Saddledome', but it does not say anything about it being built in 1983."
+      }
+    }
+  },
+  {
+    "id": "5adcdea85542992c1e3a2441_af_0.2",
+    "is_poisoned": true,
+    "injection_type": "adversarial_fact",
+    "noise_level": 0.2,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.95,\n    \"reason\": \"The context states that Ira Lewis wrote the screenplay for the film adaptation of his play 'Chinese Coffee' (released in 2000) starring Pacino and Jerry Orbach. The answer 'Chinese Coffee' is directly supported by this.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.9,\n    \"reason\": \"The question asks what film adaptation both Jerome Bernard and Ira Lewis share in common. The provided context links Ira Lewis to a film adaptation of 'Chinese Coffee' starring Jerry Orbach (Jerome Bernard Orbach). While the name 'Jerome Bernard' is slightly ambiguous in the question, the context clearly indicates Jerome Bernard \u2248 Jerry Orbach, making 'Chinese Coffee' the correct shared adaptation.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.85,\n    \"reason\": \"The retrieved context includes explicit information about 'Chinese Coffee' being adapted into a film starring Jerry Orbach and written by Ira Lewis. Although the context contains many unrelated film/musical facts, the relevant portion directly supports the answer.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.95,
+        "reason": "The context states that Ira Lewis wrote the screenplay for the film adaptation of his play 'Chinese Coffee' (released in 2000) starring Pacino and Jerry Orbach. The answer 'Chinese Coffee' is directly supported by this."
+      },
+      "answer_relevance": {
+        "score": 0.9,
+        "reason": "The question asks what film adaptation both Jerome Bernard and Ira Lewis share in common. The provided context links Ira Lewis to a film adaptation of 'Chinese Coffee' starring Jerry Orbach (Jerome Bernard Orbach). While the name 'Jerome Bernard' is slightly ambiguous in the question, the context clearly indicates Jerome Bernard \u2248 Jerry Orbach, making 'Chinese Coffee' the correct shared adaptation."
+      },
+      "context_relevance": {
+        "score": 0.85,
+        "reason": "The retrieved context includes explicit information about 'Chinese Coffee' being adapted into a film starring Jerry Orbach and written by Ira Lewis. Although the context contains many unrelated film/musical facts, the relevant portion directly supports the answer."
+      }
+    }
+  },
+  {
+    "id": "5ab82d095542990e739ec853_af_0.6",
+    "is_poisoned": true,
+    "injection_type": "adversarial_fact",
+    "noise_level": 0.6,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.0,\n    \"reason\": \"The context states that 'Tunak Tunak Tun'/'Tunak' is by Daler Mehndi and mentions its release year (1998) and details about the music video, but it does not provide Daler Mehndi's birth year. The answer '1967' is not supported by the provided context and introduces an external fact.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.2,\n    \"reason\": \"It attempts to answer the question by giving a birth year for the artist, but it does not follow from the provided material. The choice may be correct in general, but relevance to the specific context is missing.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.6,\n    \"reason\": \"The retrieved context is about the correct song ('Tunak Tunak Tun'/'Tunak') and identifies the artist as Daler Mehndi, which is relevant to determining the birth year. However, it does not include the birth year needed to answer the question.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.0,
+        "reason": "The context states that 'Tunak Tunak Tun'/'Tunak' is by Daler Mehndi and mentions its release year (1998) and details about the music video, but it does not provide Daler Mehndi's birth year. The answer '1967' is not supported by the provided context and introduces an external fact."
+      },
+      "answer_relevance": {
+        "score": 0.2,
+        "reason": "It attempts to answer the question by giving a birth year for the artist, but it does not follow from the provided material. The choice may be correct in general, but relevance to the specific context is missing."
+      },
+      "context_relevance": {
+        "score": 0.6,
+        "reason": "The retrieved context is about the correct song ('Tunak Tunak Tun'/'Tunak') and identifies the artist as Daler Mehndi, which is relevant to determining the birth year. However, it does not include the birth year needed to answer the question."
+      }
+    }
+  },
+  {
+    "id": "5ab514c05542991779162d72_af_0.6",
+    "is_poisoned": true,
+    "injection_type": "adversarial_fact",
+    "noise_level": 0.6,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 1.0,\n    \"reason\": \"The context explicitly states that Wilmslow High School is a designated \\\"Centre of Excellence,\\\" and the answer matches that wording.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The question asks what the school (where the Wilmslow Show is held) is designated as; the answer provides exactly that designation.\"\n  },\n  \"context_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The retrieved context includes the relevant fact tying Wilmslow Show\u2019s location (Wilmslow High School) to the designation \\\"Centre of Excellence,\\\" making it directly pertinent.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 1.0,
+        "reason": "The context explicitly states that Wilmslow High School is a designated \"Centre of Excellence,\" and the answer matches that wording."
+      },
+      "answer_relevance": {
+        "score": 1.0,
+        "reason": "The question asks what the school (where the Wilmslow Show is held) is designated as; the answer provides exactly that designation."
+      },
+      "context_relevance": {
+        "score": 1.0,
+        "reason": "The retrieved context includes the relevant fact tying Wilmslow Show\u2019s location (Wilmslow High School) to the designation \"Centre of Excellence,\" making it directly pertinent."
+      }
+    }
+  },
+  {
+    "id": "5adcf37e5542994ed6169c37_clean_poisonedrag_style_0.2",
+    "is_poisoned": false,
+    "injection_type": "poisonedrag_style",
+    "noise_level": 0.2,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.8,\n    \"reason\": \"The answer 'BMW X6' is supported by the context stating that the BMW E70 (X5 second generation) was manufactured alongside the new, 2009 BMW X6. No contradictory claims are introduced.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The question asks which newer model the BMW X5 mid-size version was produced alongside (produced in 2009). The answer 'BMW X6' directly matches that description.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.6,\n    \"reason\": \"The context contains the needed line about production alongside the 2009 BMW X6, but it also includes many unrelated entries (e.g., other BMW models, engines, and the unrelated Bolzano ship and Honda motorcycle), making the overall retrieved context only partially focused.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.8,
+        "reason": "The answer 'BMW X6' is supported by the context stating that the BMW E70 (X5 second generation) was manufactured alongside the new, 2009 BMW X6. No contradictory claims are introduced."
+      },
+      "answer_relevance": {
+        "score": 1.0,
+        "reason": "The question asks which newer model the BMW X5 mid-size version was produced alongside (produced in 2009). The answer 'BMW X6' directly matches that description."
+      },
+      "context_relevance": {
+        "score": 0.6,
+        "reason": "The context contains the needed line about production alongside the 2009 BMW X6, but it also includes many unrelated entries (e.g., other BMW models, engines, and the unrelated Bolzano ship and Honda motorcycle), making the overall retrieved context only partially focused."
+      }
+    }
+  },
+  {
+    "id": "5a89fea655429970aeb701eb_clean_adversarial_fact_0.6",
+    "is_poisoned": false,
+    "injection_type": "adversarial_fact",
+    "noise_level": 0.6,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.0,\n    \"reason\": \"The provided context includes summaries of multiple films (including that 'Nightmares' is a 1983 film starring Emilio Estevez) but does not state that Emilio Estevez starred in 'The Outsiders' in the same year as Nightmares. The answer ('The Outsiders') is not supported by the context for this specific year-matching claim.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.3,\n    \"reason\": \"The question asks for the film where Emilio Estevez starred in the same year as 'Nightmares' (which is indicated as 1983). 'The Outsiders' is mentioned in the context as an '1983 hit movie', so it is at least a plausible candidate. However, the response is incomplete/incorrectly justified because it does not explicitly tie the year to 'Nightmares' and is not directly derived from an explicit context linkage.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.4,\n    \"reason\": \"The context contains the necessary relevant pieces: 'Nightmares' is described as a 1983 film starring Emilio Estevez, and 'The Outsiders' is mentioned as an 1983 hit movie in which Estevez starred. While other context is noisy, these two items are relevant to determining the same-year film.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.0,
+        "reason": "The provided context includes summaries of multiple films (including that 'Nightmares' is a 1983 film starring Emilio Estevez) but does not state that Emilio Estevez starred in 'The Outsiders' in the same year as Nightmares. The answer ('The Outsiders') is not supported by the context for this specific year-matching claim."
+      },
+      "answer_relevance": {
+        "score": 0.3,
+        "reason": "The question asks for the film where Emilio Estevez starred in the same year as 'Nightmares' (which is indicated as 1983). 'The Outsiders' is mentioned in the context as an '1983 hit movie', so it is at least a plausible candidate. However, the response is incomplete/incorrectly justified because it does not explicitly tie the year to 'Nightmares' and is not directly derived from an explicit context linkage."
+      },
+      "context_relevance": {
+        "score": 0.4,
+        "reason": "The context contains the necessary relevant pieces: 'Nightmares' is described as a 1983 film starring Emilio Estevez, and 'The Outsiders' is mentioned as an 1983 hit movie in which Estevez starred. While other context is noisy, these two items are relevant to determining the same-year film."
+      }
+    }
+  },
+  {
+    "id": "5abdba405542993f32c2a023_clean_poisonedrag_style_0.6",
+    "is_poisoned": false,
+    "injection_type": "poisonedrag_style",
+    "noise_level": 0.6,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.1,\n    \"reason\": \"The context states that 'Family Matters ... [is] a spin-off of \\\"Perfect Strangers,\\\"' which would support the correct answer. However, the rest of the text does not clearly connect Orlando Brown\u2019s role to that spin-off fact, so the final answer is only weakly justified by the provided material linkage (though the fact itself is present).\"\n  },\n  \"answer_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The question asks: 'Orlando Brown ... role as 3J Winslow ... sitcom that was a spin-off of what?' The provided answer 'Perfect Strangers' directly and correctly matches the spin-off stated in the context.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.9,\n    \"reason\": \"The context contains a relevant line: 'Family Matters ... [is] a spin-off of \\\"Perfect Strangers,\\\"' which is exactly the needed information. Other context is mostly biographical and not directly needed, but the key supporting detail is present.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.1,
+        "reason": "The context states that 'Family Matters ... [is] a spin-off of \"Perfect Strangers,\"' which would support the correct answer. However, the rest of the text does not clearly connect Orlando Brown\u2019s role to that spin-off fact, so the final answer is only weakly justified by the provided material linkage (though the fact itself is present)."
+      },
+      "answer_relevance": {
+        "score": 1.0,
+        "reason": "The question asks: 'Orlando Brown ... role as 3J Winslow ... sitcom that was a spin-off of what?' The provided answer 'Perfect Strangers' directly and correctly matches the spin-off stated in the context."
+      },
+      "context_relevance": {
+        "score": 0.9,
+        "reason": "The context contains a relevant line: 'Family Matters ... [is] a spin-off of \"Perfect Strangers,\"' which is exactly the needed information. Other context is mostly biographical and not directly needed, but the key supporting detail is present."
+      }
+    }
+  },
+  {
+    "id": "5a7518cb55429916b0164259_af_0.8",
+    "is_poisoned": true,
+    "injection_type": "adversarial_fact",
+    "noise_level": 0.8,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.4,\n    \"reason\": \"The answer (\u201cRafael M\u00e1rquez\u201d) is at least suggested by the context stating Juan Manuel M\u00e1rquez's older brother exists and that it names Rafael M\u00e1rquez M\u00e9ndez as another boxer. However, the context does not explicitly connect Rafael as the specific WBO champion holding Juan Manuel M\u00e1rquez\u2019s younger brother, nor does it mention WBO in relation to that brother detail.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.2,\n    \"reason\": \"While Rafael M\u00e1rquez is likely related to Juan Manuel M\u00e1rquez\u2019s family, the question asks about the 'WBO champion' who held Juan Manuel M\u00e1rquez's younger brother. The provided answer does not confirm the WBO champion aspect or the holding relationship; it only names a brother.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.25,\n    \"reason\": \"The context includes information about Rafael M\u00e1rquez and notes Juan Manuel M\u00e1rquez\u2019s older brother is also a boxer. This is somewhat relevant to identifying a brother, but the context is not clearly focused on a WBO champion holding a younger brother, which the question explicitly requires.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.4,
+        "reason": "The answer (\u201cRafael M\u00e1rquez\u201d) is at least suggested by the context stating Juan Manuel M\u00e1rquez's older brother exists and that it names Rafael M\u00e1rquez M\u00e9ndez as another boxer. However, the context does not explicitly connect Rafael as the specific WBO champion holding Juan Manuel M\u00e1rquez\u2019s younger brother, nor does it mention WBO in relation to that brother detail."
+      },
+      "answer_relevance": {
+        "score": 0.2,
+        "reason": "While Rafael M\u00e1rquez is likely related to Juan Manuel M\u00e1rquez\u2019s family, the question asks about the 'WBO champion' who held Juan Manuel M\u00e1rquez's younger brother. The provided answer does not confirm the WBO champion aspect or the holding relationship; it only names a brother."
+      },
+      "context_relevance": {
+        "score": 0.25,
+        "reason": "The context includes information about Rafael M\u00e1rquez and notes Juan Manuel M\u00e1rquez\u2019s older brother is also a boxer. This is somewhat relevant to identifying a brother, but the context is not clearly focused on a WBO champion holding a younger brother, which the question explicitly requires."
+      }
+    }
+  },
+  {
+    "id": "5ae762835542997b22f6a711_rn_0.2",
+    "is_poisoned": true,
+    "injection_type": "random_noise",
+    "noise_level": 0.2,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.0,\n    \"reason\": \"The answer \\\"tip of the Baja California\\\" is not supported by the context. None of the provided passages state that Villa Uni\u00f3n (Sinaloa) is located after or relative to the tip of the Baja California Peninsula; that detail appears only in the Mazatl\u00e1n entry (about Mazatl\u00e1n\u2019s location relative to Baja California).\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.1,\n    \"reason\": \"The question asks which Mexican state Villa Uni\u00f3n (in Sinaloa) is located after. The provided answer does not identify any Mexican state in the way the question requires; it instead refers to a geographical feature (the tip of Baja California), and does not clearly answer \\\"was the Mexican state after which\\\".\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.2,\n    \"reason\": \"While the context includes a relevant fragment mentioning Mazatl\u00e1n is across from the southernmost tip of the Baja California Peninsula, the question is about Villa Uni\u00f3n in Sinaloa. The context does not provide a direct link between Villa Uni\u00f3n (Sinaloa) and that Baja California reference, and includes multiple unrelated places named Villa Uni\u00f3n (Argentina and other Mexican states).\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.0,
+        "reason": "The answer \"tip of the Baja California\" is not supported by the context. None of the provided passages state that Villa Uni\u00f3n (Sinaloa) is located after or relative to the tip of the Baja California Peninsula; that detail appears only in the Mazatl\u00e1n entry (about Mazatl\u00e1n\u2019s location relative to Baja California)."
+      },
+      "answer_relevance": {
+        "score": 0.1,
+        "reason": "The question asks which Mexican state Villa Uni\u00f3n (in Sinaloa) is located after. The provided answer does not identify any Mexican state in the way the question requires; it instead refers to a geographical feature (the tip of Baja California), and does not clearly answer \"was the Mexican state after which\"."
+      },
+      "context_relevance": {
+        "score": 0.2,
+        "reason": "While the context includes a relevant fragment mentioning Mazatl\u00e1n is across from the southernmost tip of the Baja California Peninsula, the question is about Villa Uni\u00f3n in Sinaloa. The context does not provide a direct link between Villa Uni\u00f3n (Sinaloa) and that Baja California reference, and includes multiple unrelated places named Villa Uni\u00f3n (Argentina and other Mexican states)."
+      }
+    }
+  },
+  {
+    "id": "5a7a567255429941d65f25bd_pr_0.2",
+    "is_poisoned": true,
+    "injection_type": "poisonedrag_style",
+    "noise_level": 0.2,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.65,\n    \"reason\": \"The context states that Iqbal Fazl Quadir participated in a flotilla attack on the radar station in Dwarka. The answer 'flotilla' matches that claim. However, the question asks specifically 'on what was he when he participated'; the provided context gives only 'flotilla' as the mode of participation, without more detail about what he was on (e.g., specific ship/vehicle).\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.9,\n    \"reason\": \"The question asks what he was on during the attack; the answer 'flotilla' directly corresponds to the context's description of the group that attacked the Dwarka radar station.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.75,\n    \"reason\": \"The relevant context is the final paragraph mentioning Iqbal Fazl Quadir and the flotilla that attacked the Dwarka radar station. While much of the surrounding context is unrelated to Dwarka/Iqbal, the specific needed piece is present and aligned with the answer.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.65,
+        "reason": "The context states that Iqbal Fazl Quadir participated in a flotilla attack on the radar station in Dwarka. The answer 'flotilla' matches that claim. However, the question asks specifically 'on what was he when he participated'; the provided context gives only 'flotilla' as the mode of participation, without more detail about what he was on (e.g., specific ship/vehicle)."
+      },
+      "answer_relevance": {
+        "score": 0.9,
+        "reason": "The question asks what he was on during the attack; the answer 'flotilla' directly corresponds to the context's description of the group that attacked the Dwarka radar station."
+      },
+      "context_relevance": {
+        "score": 0.75,
+        "reason": "The relevant context is the final paragraph mentioning Iqbal Fazl Quadir and the flotilla that attacked the Dwarka radar station. While much of the surrounding context is unrelated to Dwarka/Iqbal, the specific needed piece is present and aligned with the answer."
+      }
+    }
+  },
+  {
+    "id": "5ac4c16b5542997ea680cab4_af_0.2",
+    "is_poisoned": true,
+    "injection_type": "adversarial_fact",
+    "noise_level": 0.2,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.98,\n    \"reason\": \"The provided context states Brett Scallions is an American musician and describes Mick Jagger\u2019s extensive music/songwriting work. The question\u2019s answer ('yes') is directly supported without adding unsupported claims.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 1.0,\n    \"reason\": \"The question asks whether both Mick Jagger and Brett Scallions are musicians, and the output answers 'yes' directly.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.95,\n    \"reason\": \"The context includes an explicit statement that Brett Scallions is a musician and multiple statements about Mick Jagger\u2019s role as a musician/performer/songwriter. Some context is extraneous biographical and album/song details, but it remains relevant and consistently supports both identities as musicians.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.98,
+        "reason": "The provided context states Brett Scallions is an American musician and describes Mick Jagger\u2019s extensive music/songwriting work. The question\u2019s answer ('yes') is directly supported without adding unsupported claims."
+      },
+      "answer_relevance": {
+        "score": 1.0,
+        "reason": "The question asks whether both Mick Jagger and Brett Scallions are musicians, and the output answers 'yes' directly."
+      },
+      "context_relevance": {
+        "score": 0.95,
+        "reason": "The context includes an explicit statement that Brett Scallions is a musician and multiple statements about Mick Jagger\u2019s role as a musician/performer/songwriter. Some context is extraneous biographical and album/song details, but it remains relevant and consistently supports both identities as musicians."
+      }
+    }
+  },
+  {
+    "id": "5a80cf4c55429938b61421f6_rn_0.6",
+    "is_poisoned": true,
+    "injection_type": "random_noise",
+    "noise_level": 0.6,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.0,\n    \"reason\": \"The provided answer (\u201cto ensure wide visibility and understanding of cases in a region\u201d) does not appear in the context and does not relate to Eric S. Pistorius\u2019 post-attorney business concept. It introduces an unsupported claim.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.0,\n    \"reason\": \"The question asks for the concept of the business Eric S. Pistorius worked for after being an attorney. The answer is unrelated to Pistorius, his career, or any business concept described in the context.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.0,\n    \"reason\": \"The context provided discusses Commissioner v. Flowers and Pistorius\u2019 specialization areas as an attorney, but it contains no information about any business he worked for after being an attorney, nor any \u2018wide visibility and understanding of cases\u2019 concept.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.0,
+        "reason": "The provided answer (\u201cto ensure wide visibility and understanding of cases in a region\u201d) does not appear in the context and does not relate to Eric S. Pistorius\u2019 post-attorney business concept. It introduces an unsupported claim."
+      },
+      "answer_relevance": {
+        "score": 0.0,
+        "reason": "The question asks for the concept of the business Eric S. Pistorius worked for after being an attorney. The answer is unrelated to Pistorius, his career, or any business concept described in the context."
+      },
+      "context_relevance": {
+        "score": 0.0,
+        "reason": "The context provided discusses Commissioner v. Flowers and Pistorius\u2019 specialization areas as an attorney, but it contains no information about any business he worked for after being an attorney, nor any \u2018wide visibility and understanding of cases\u2019 concept."
+      }
+    }
+  },
+  {
+    "id": "5ac2660d55429951e9e685a1_rn_0.4",
+    "is_poisoned": true,
+    "injection_type": "random_noise",
+    "noise_level": 0.4,
+    "raw_response": "{\n  \"faithfulness\": {\n    \"score\": 0.55,\n    \"reason\": \"The answer (Idina Kim Menzel) is consistent with the context line stating: \u201cThe I Stand tour was a tour taken by American actress and singer Idina Menzel.\u201d However, the question asks for an actress, singer, and songwriter who took the tour; the context only supports Idina Menzel in general and does not clearly tie the I Stand tour to the full triple-role phrasing beyond her description.\"\n  },\n  \"answer_relevance\": {\n    \"score\": 0.7,\n    \"reason\": \"It directly provides a single matching person: Idina Menzel. But it does not clearly address the full phrasing of the question (actress, singer, and songwriter) as distinct roles, and it omits how the \u201cI Stand tour\u201d relates to that exact tour beyond the one sentence.\"\n  },\n  \"context_relevance\": {\n    \"score\": 0.3,\n    \"reason\": \"Most of the retrieved context is unrelated (Usher tours, Shakira tour, Nomeansno, Sy Smith, Madonna). Only one short sentence is relevant to the question. The answer relies on that minimal relevant snippet, so overall context relevance is low.\"\n  }\n}",
+    "parsed": {
+      "faithfulness": {
+        "score": 0.55,
+        "reason": "The answer (Idina Kim Menzel) is consistent with the context line stating: \u201cThe I Stand tour was a tour taken by American actress and singer Idina Menzel.\u201d However, the question asks for an actress, singer, and songwriter who took the tour; the context only supports Idina Menzel in general and does not clearly tie the I Stand tour to the full triple-role phrasing beyond her description."
+      },
+      "answer_relevance": {
+        "score": 0.7,
+        "reason": "It directly provides a single matching person: Idina Menzel. But it does not clearly address the full phrasing of the question (actress, singer, and songwriter) as distinct roles, and it omits how the \u201cI Stand tour\u201d relates to that exact tour beyond the one sentence."
+      },
+      "context_relevance": {
+        "score": 0.3,
+        "reason": "Most of the retrieved context is unrelated (Usher tours, Shakira tour, Nomeansno, Sy Smith, Madonna). Only one short sentence is relevant to the question. The answer relies on that minimal relevant snippet, so overall context relevance is low."
+      }
+    }
+  }
+]

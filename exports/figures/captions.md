@@ -10,7 +10,7 @@ Mean faithfulness by category (Clean, Standard, True, Survived) across the three
 True-category mean faithfulness as a function of noise level (0.2-0.8) for each judge. Annotations on the statistical-postfilter line at noise levels 0.2 and 0.8 highlight the cross-over effect: low-noise attacks become relatively more dangerous after filtering than high-noise attacks.
 
 **fig04a_per_injection_faithfulness.png**
-True-category faithfulness for each combination of judge (columns) and injection type (rows) under Baseline, statistical-Postfilter, and LLM-Postfilter conditions. Delta annotations above Postfilter and LLM bars show the change from Baseline; positive values indicate that the filter paradox is injection-type-specific.
+True-category faithfulness for each combination of judge (columns) and replacement-based injection type (rows) under Baseline, statistical-Postfilter, and LLM-Postfilter conditions. PoisonedRAG-style is omitted because additive attacks never overwrite supporting passages and therefore have no True-category cases.
 
 **fig04b_per_injection_context.png**
 As Figure 4a, but for context relevance scores.
@@ -28,4 +28,4 @@ Distribution of per-triplet faithfulness standard deviation across the three jud
 McNemar chi-square statistics testing whether the proportion of faithfulness false positives changes significantly between the baseline and each postfilter condition, restricted to the True category. Asterisks denote significance: * p < 0.05, ** p < 0.01, *** p < 0.001; n.s. = not significant.
 
 **fig08_filter_audit.png**
-Mean per-triplet passage counts by outcome type and injection type for both filter strategies. The boldly annotated collateral-loss bars (orange) quantify how often each filter mistakenly removes non-poisoned passages that originally supported the correct answer; this is the key operational safety metric.
+Mean per-triplet passage counts by outcome type and injection type for the statistical filter. The LLM filter is omitted because it makes triplet-level decisions and does not remove individual passages. The boldly annotated collateral-loss bars (orange) quantify how often the statistical filter mistakenly removes non-poisoned passages that originally supported the correct answer.

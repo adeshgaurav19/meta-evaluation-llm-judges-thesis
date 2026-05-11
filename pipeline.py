@@ -9,8 +9,6 @@ Usage:
     python pipeline.py --no-batch               # use real-time API (no 24h wait)
     python pipeline.py --config path/to/cfg.yaml
 """
-from __future__ import annotations
-
 import argparse
 import importlib
 import subprocess
@@ -63,39 +61,26 @@ PHASES: list[Phase] = [
 
 # Helpers
 
-RESET   = "\033[0m"
-BOLD    = "\033[1m"
-GREEN   = "\033[32m"
-RED     = "\033[31m"
-CYAN    = "\033[36m"
-DIM     = "\033[2m"
-
-
-def _color(text: str, code: str) -> str:
-    return f"{code}{text}{RESET}"
-
-
 def _phase_done(phase: Phase) -> bool:
     return Path(phase.sentinel).exists()
 
 
 def _print_plan(phases_to_run: list[Phase], force: bool) -> None:
-    print(f"\n{BOLD}{'='*65}{RESET}")
-    print(f"{BOLD}  META-EVAL PIPELINE    {len(phases_to_run)} phase(s) queued{RESET}")
-    print(f"{BOLD}{'='*65}{RESET}")
+    print(f"\n{'='*65}")
+    print(f"  META-EVAL PIPELINE    {len(phases_to_run)} phase(s) queued")
+    print(f"{'='*65}")
     for p in phases_to_run:
         done = _phase_done(p) and not force
-        status = _color("SKIP", GREEN) if done else _color("RUN ", CYAN)
-        print(f"  {status}  Phase {p.number}: {p.name:<22} {_color(p.description, DIM)}")
-    print(f"{BOLD}{'='*65}{RESET}\n")
+        status = "SKIP" if done else "RUN "
+        print(f"  {status}  Phase {p.number}: {p.name:<22} {p.description}")
+    print(f"{'='*65}\n")
 
 
 def _run_phase(phase: Phase, extra_args: list[str], config_path: str) -> bool:
-    """Run a single phase script. Returns True on success."""
     cmd = [sys.executable, phase.script, "--config", config_path] + extra_args
     start = time.time()
 
-    print(f"\n{BOLD}{_color(f'Phase {phase.number}: {phase.name}', CYAN)}{RESET}")
+    print(f"\nPhase {phase.number}: {phase.name}")
     print(f"  {phase.description}")
     print(f"  Command: {' '.join(cmd)}")
     print()
@@ -104,10 +89,10 @@ def _run_phase(phase: Phase, extra_args: list[str], config_path: str) -> bool:
     elapsed = time.time() - start
 
     if result.returncode == 0:
-        print(f"\n  {_color(f'Phase {phase.number} complete', GREEN)} ({elapsed:.0f}s)")
+        print(f"\n  Phase {phase.number} complete ({elapsed:.0f}s)")
         return True
     else:
-        print(f"\n  {_color(f'Phase {phase.number} FAILED (exit {result.returncode})', RED)}")
+        print(f"\n  Phase {phase.number} FAILED (exit {result.returncode})")
         return False
 
 
@@ -117,32 +102,20 @@ def _print_summary(
     failed: int | None,
     wall_seconds: float,
 ) -> None:
-    print(f"\n{BOLD}{'='*65}{RESET}")
-    print(f"{BOLD}  PIPELINE SUMMARY{RESET}")
-    print(f"{BOLD}{'='*65}{RESET}")
+    print(f"\n{'='*65}")
+    print(f"  PIPELINE SUMMARY")
+    print(f"{'='*65}")
     print(f"  Completed phases : {completed}")
     print(f"  Skipped (done)   : {skipped}")
     if failed is not None:
-        print(f"  {_color(f'Failed at phase  : {failed}', RED)}")
+        print(f"  Failed at phase  : {failed}")
     print(f"  Wall time        : {wall_seconds/60:.1f} min")
 
-    # Show the main output locations people usually check after a run.
-    figs = sorted(Path("results/figures").glob("*.png")) if Path("results/figures").exists() else []
-    figs_v2 = sorted(Path("results/v2/figures").glob("fig_*.png")) if Path("results/v2/figures").exists() else []
-    tbls = sorted(Path("results/tables").glob("*.csv")) if Path("results/tables").exists() else []
     exports = sorted(Path("exports").glob("*.csv")) if Path("exports").exists() else []
-    if figs or figs_v2 or tbls or exports:
-        print(f"\n  Results:")
-        if figs:
-            print(f"    Figures (legacy) : {len(figs)} PNG files -> results/figures/")
-        if figs_v2:
-            print(f"    Figures (thesis) : {len(figs_v2)} PNG files -> results/v2/figures/")
-        if tbls:
-            print(f"    Tables  : {len(tbls)} CSV files -> results/tables/")
-        if exports:
-            print(f"    Exports : {len(exports)} CSV files -> exports/")
+    if exports:
+        print(f"\n  Exports : {len(exports)} CSV files -> exports/")
 
-    print(f"{BOLD}{'='*65}{RESET}\n")
+    print(f"{'='*65}\n")
 
 
 # Main

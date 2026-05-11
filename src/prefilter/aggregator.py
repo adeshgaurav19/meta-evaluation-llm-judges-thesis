@@ -20,7 +20,16 @@ def aggregate(
     config: dict,
     method: AggMethod | None = None,
 ) -> list[PrefilterScore]:
-    """Mutates scores in-place, setting aggregated_score and flagged on each entry."""
+    """
+    Combine the five passage-level filter signals into one poison score.
+
+    The configured primary method is usually XGBoost. At inference time the saved
+    XGBoost model receives the signals in the same order used during training:
+    embedding anomaly, entropy, classifier score, cross-encoder relevance, and
+    answer-span score. The function mutates each PrefilterScore in place by setting
+    aggregated_score and flagged. If the saved XGBoost checkpoint is missing, it
+    falls back to the weighted-vote baseline so the pipeline can still run.
+    """
     agg_cfg = config["prefilter"]["aggregation"]
     if method is None:
         method = agg_cfg["primary"]
