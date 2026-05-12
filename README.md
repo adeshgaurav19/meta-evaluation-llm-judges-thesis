@@ -16,9 +16,7 @@ The final experiments use three judges, three poisoning types, two pre-filter st
 | `config/` | Experiment configuration. `config/v2.yaml` is the final v2 config. |
 | `src/` | Reusable package code: dataset construction/poisoning, judges, pre-filters, metrics, analysis helpers, and utilities. |
 | `scripts/` | Main runnable pipeline scripts and final analysis scripts. |
-| `pipeline.py` | Convenience pipeline entry point. |
 | `notebooks/phase3_4_kaggle.ipynb` | Kaggle notebook used for GPU-heavy Phase 3 and Phase 4 work. The classifier/pre-filter GPU code can be inspected there. |
-| `kaggle_phase34/` | Kaggle working copy / supporting notebook material for Phase 3 and Phase 4. |
 | `results/v2/` | Saved v2 experiment outputs used by the final analysis: raw judge scores, pre-filter scores, filtered triplets, justification samples, and audit files. |
 | `exports/` | Final thesis-ready CSV tables, figures, and summaries generated from `scripts/analyze.py` and `scripts/plot.py`. |
 | `report/` | LaTeX report source, bibliography, report images, and report-specific README. |
@@ -69,18 +67,34 @@ Source modules:
 
 ## Main Pipeline
 
-The pipeline is configured through `config/v2.yaml`.
+All scripts are run sequentially. The pipeline is configured through `config/v2.yaml`.
 
 ```bash
+# Phase 1 — Build the poisoned evaluation dataset
 python scripts/00_download_hotpotqa.py --config config/v2.yaml
 python scripts/01_prepare_dataset.py --config config/v2.yaml
-python scripts/02_run_judges.py --config config/v2.yaml
+
+# Phase 2 — Baseline judge scoring (run each judge separately)
+python scripts/02_run_judges.py --config config/v2.yaml --judge gpt
+python scripts/02_run_judges.py --config config/v2.yaml --judge gemini
+python scripts/02_run_judges.py --config config/v2.yaml --judge deepseek
+
+# Phase 3 — Train and run pre-filters
+# Note: 03 and 04 use GPU; run via notebooks/phase3_4_kaggle.ipynb on Kaggle for classifier/cross-encoder steps
 python scripts/03_train_prefilter.py --config config/v2.yaml
 python scripts/04_run_prefilter.py --config config/v2.yaml
 python scripts/04b_run_llm_prefilter.py --config config/v2.yaml
-python scripts/05_evaluate_impact.py --config config/v2.yaml
+
+# Phase 4 — Score post-filter contexts (run each judge separately)
+python scripts/05_evaluate_impact.py --config config/v2.yaml --judge gpt
+python scripts/05_evaluate_impact.py --config config/v2.yaml --judge gemini
+python scripts/05_evaluate_impact.py --config config/v2.yaml --judge deepseek
+
+# Phase 4 (cont.) — Justification and poison-aware judge experiments
 python scripts/06_run_justifications.py --config config/v2.yaml
 python scripts/06b_run_poison_aware_judge.py --config config/v2.yaml
+
+# Analysis — Regenerate tables and figures from saved outputs
 python scripts/analyze.py
 python scripts/plot.py
 ```
@@ -145,7 +159,7 @@ pdflatex -interaction=nonstopmode main.tex
 
 The repository is intended to track:
 
-- source code in `src/`, `scripts/`, and `pipeline.py`
+- source code in `src/` and `scripts/`
 - final configuration in `config/`
 - final report source in `report/`
 - final compact analysis exports in `exports/`
